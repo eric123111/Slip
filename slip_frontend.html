@@ -1,0 +1,2696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#0D7A6B" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<title>Slip — Receipt Tracker</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F6F5F1;--bg2:#FFFFFF;--bg3:#EEECEA;
+  --accent:#0D7A6B;--accent-light:#E6F5F2;--accent-mid:#B2DDD8;
+  --green:#1a7a45;--green-bg:#E8F5EE;
+  --blue:#185FA5;--blue-bg:#E6F1FB;
+  --purple:#534AB7;--purple-bg:#EEEDFE;
+  --red:#A32D2D;--red-bg:#FCEBEB;
+  --amber:#854F0B;--amber-bg:#FEF9EE;
+  --text:#1a1a1a;--text2:#6b6b6b;--text3:#aaaaaa;
+  --border:#E2DDD6;--border2:#C8C3BA;
+  --radius:12px;--radius-sm:8px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;font-size:14px}
+.sidebar{width:210px;min-height:100vh;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;left:0;bottom:0}
+.logo{padding:22px 18px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+.logo-icon{width:30px;height:30px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:#fff}
+.logo-text{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;color:var(--text)}
+.nav{padding:14px 10px;flex:1;display:flex;flex-direction:column}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:var(--text2);transition:all 0.12s;margin-bottom:1px}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:var(--accent-light);color:var(--accent);font-weight:500}
+.nav-item i{font-size:16px}
+.nav-spacer{flex:1}
+.nav-divider{height:1px;background:var(--border);margin:8px 0}
+.main{flex:1;margin-left:210px;background:var(--bg);min-height:100vh}
+.topbar{padding:22px 26px 0;display:flex;justify-content:space-between;align-items:flex-start}
+.page-title{font-family:'Syne',sans-serif;font-weight:700;font-size:20px;color:var(--text)}
+.page-sub{font-size:12px;color:var(--text3);margin-top:3px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;cursor:pointer;border:none;transition:all 0.12s;font-family:'DM Sans',sans-serif}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#0a6358}
+.btn-ghost{background:var(--bg2);color:var(--text2);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--border2);color:var(--text)}
+.btn-danger{background:var(--red-bg);color:var(--red);border:1px solid #F7C1C1}
+.btn-danger:hover{background:#F7C1C1}
+.btn-purple{background:var(--purple-bg);color:var(--purple);border:1px solid #C9C6F5}
+.btn-purple:hover{background:#C9C6F5}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn-ai{background:var(--accent);color:#fff}
+.content{padding:18px 26px 40px}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px}
+.stat-card.accent-card{border-color:var(--accent-mid);background:var(--accent-light)}
+.stat-card.green-card{border-color:#b8e0cc;background:var(--green-bg)}
+.stat-card.purple-card{border-color:#C9C6F5;background:var(--purple-bg)}
+.stat-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);font-weight:500;margin-bottom:8px}
+.stat-value{font-family:'Syne',sans-serif;font-weight:700;font-size:22px;color:var(--text)}
+.stat-value.accent{color:var(--accent)}
+.stat-value.green{color:var(--green)}
+.stat-value.purple{color:var(--purple)}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:3px}
+.grid-2{display:grid;grid-template-columns:1fr 320px;gap:14px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
+.card-title{font-family:'Syne',sans-serif;font-weight:600;font-size:13px;color:var(--text);margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+.card-title a{font-family:'DM Sans',sans-serif;font-size:12px;color:var(--accent);font-weight:400;cursor:pointer}
+.empty-state{text-align:center;padding:32px 20px;color:var(--text3)}
+.empty-state i{font-size:32px;margin-bottom:10px;display:block;color:var(--border2)}
+.empty-state p{font-size:13px;margin-bottom:14px}
+.receipt-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border-radius:var(--radius-sm);margin-bottom:8px;cursor:pointer;transition:all 0.12s;border:1px solid transparent}
+.receipt-row:hover{background:var(--accent-light);border-color:var(--accent-mid)}
+.receipt-icon{width:32px;height:32px;background:var(--accent-light);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--accent-mid);overflow:hidden}
+.receipt-icon i{color:var(--accent);font-size:15px}
+.chart-area{height:120px;display:flex;align-items:flex-end;gap:6px}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%}
+.bar-inner{width:100%;display:flex;align-items:flex-end;flex:1}
+.bar{width:100%;border-radius:4px 4px 0 0;background:var(--bg3);border:1px solid var(--border);cursor:pointer;transition:all 0.12s}
+.bar:hover{background:var(--accent-mid)}
+.bar.active{background:var(--accent);border-color:var(--accent)}
+.bar-label{font-size:10px;color:var(--text3);cursor:pointer}
+.tag{display:inline-flex;align-items:center;padding:1px 7px;border-radius:20px;font-size:10px;font-weight:500}
+.tag-job{background:var(--accent-light);color:var(--accent)}
+.tag-po{background:var(--purple-bg);color:var(--purple)}
+.tag-card{background:var(--green-bg);color:var(--green)}
+.tag-accent{background:var(--accent-light);color:var(--accent)}
+.tag-red{background:var(--red-bg);color:var(--red)}
+/* ── Tab system ── */
+.tab-bar{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px}
+.tab-btn{padding:9px 18px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.12s;font-family:'DM Sans',sans-serif}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-btn:hover:not(.active){color:var(--text)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+/* ── Alert banner ── */
+.alert-banner{display:none;align-items:center;gap:10px;padding:10px 16px;background:var(--amber-bg);border:1px solid #F0C97E;border-radius:var(--radius-sm);margin-bottom:16px;cursor:pointer;transition:background 0.12s}
+.alert-banner:hover{background:#FDF3DC}
+.alert-banner.show{display:flex}
+.alert-banner-text{font-size:12px;color:var(--amber);flex:1}
+.alert-banner-link{font-size:11px;color:var(--amber);font-weight:600;text-decoration:underline;white-space:nowrap;flex-shrink:0}
+/* ── Unassigned section ── */
+.unassigned-section{background:var(--red-bg);border:1px solid #F7C1C1;border-radius:var(--radius);padding:14px 16px;margin-bottom:18px}
+.unassigned-header{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.unassigned-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--red)}
+.unassigned-badge{background:var(--red);color:#fff;border-radius:10px;padding:1px 8px;font-size:10px;font-weight:700}
+.unassigned-hint{font-size:11px;color:var(--red);opacity:0.65;margin-left:auto}
+.unassigned-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:8px}
+.unassigned-card{background:#fff;border:1px solid #F7C1C1;border-radius:var(--radius-sm);padding:10px 12px;cursor:grab;transition:all 0.12s}
+.unassigned-card:hover{border-color:var(--red);transform:translateY(-1px);box-shadow:0 3px 10px rgba(163,45,45,0.15)}
+.unassigned-card.dragging{opacity:0.4;cursor:grabbing}
+.unassigned-vendor{font-size:12px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:2px}
+.unassigned-meta{font-size:10px;color:var(--text3);margin-bottom:7px}
+.unassigned-amt{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--red);margin-bottom:8px}
+.assign-chip{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;background:var(--red);color:#fff;border-radius:5px;font-size:10px;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:background 0.12s}
+.assign-chip:hover{background:#8a2424}
+/* ── Job cards ── */
+.job-card{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:var(--radius);margin-bottom:10px;transition:box-shadow 0.12s}
+.job-card.drag-over{box-shadow:0 0 0 2px var(--accent);background:var(--accent-light)}
+.job-card-header{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;user-select:none;border-radius:var(--radius) var(--radius) 0 0}
+.job-card-header:hover{background:var(--bg3)}
+.job-card-icon{width:32px;height:32px;background:var(--accent-light);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--accent-mid)}
+.job-card-icon i{color:var(--accent);font-size:15px}
+.job-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text)}
+.job-meta{font-size:11px;color:var(--text3);margin-top:1px}
+.job-card-right{display:flex;gap:16px;margin-left:auto;align-items:center;flex-shrink:0}
+.job-stat-val{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text);text-align:right}
+.job-stat-lbl{font-size:10px;color:var(--text3);text-align:right}
+.job-chevron{color:var(--text3);font-size:16px;transition:transform 0.2s;flex-shrink:0;margin-left:4px}
+.job-card-body{display:none;padding:12px 16px 14px;border-top:1px solid var(--border)}
+.job-card-body.open{display:block}
+.budget-row{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:8px;margin-bottom:3px}
+.budget-bar-wrap{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-bottom:10px}
+.budget-bar-fill{height:100%;border-radius:3px;background:var(--accent);transition:width 0.4s}
+.budget-bar-fill.over{background:var(--red)}
+.tax-mini{display:flex;gap:12px;font-size:11px;color:var(--text2);padding:8px 10px;background:var(--bg3);border-radius:var(--radius-sm);margin-bottom:10px}
+.tax-mini span{display:flex;gap:4px;align-items:center}
+/* ── PO cards ── */
+.po-card{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--purple);border-radius:var(--radius);margin-bottom:10px;transition:box-shadow 0.12s}
+.po-card.drag-over{box-shadow:0 0 0 2px var(--purple);background:var(--purple-bg)}
+.po-card-header{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;user-select:none;border-radius:var(--radius) var(--radius) 0 0}
+.po-card-header:hover{background:var(--bg3)}
+.po-card-icon{width:32px;height:32px;background:var(--purple-bg);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid #C9C6F5}
+.po-card-icon i{color:var(--purple);font-size:15px}
+.po-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text)}
+.po-meta{font-size:11px;color:var(--text3);margin-top:1px}
+.po-chevron{color:var(--text3);font-size:16px;transition:transform 0.2s;flex-shrink:0;margin-left:auto}
+.po-card-body{display:none;padding:12px 16px 14px;border-top:1px solid var(--border)}
+.po-card-body.open{display:block}
+/* ── Receipt mini rows (inside cards) ── */
+.receipt-mini{display:flex;align-items:center;gap:9px;padding:8px 10px;background:var(--bg3);border-radius:var(--radius-sm);margin-bottom:6px;cursor:pointer;transition:all 0.12s;border:1px solid transparent}
+.receipt-mini:hover{background:var(--accent-light);border-color:var(--accent-mid)}
+.receipt-mini-icon{width:26px;height:26px;background:var(--bg2);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);overflow:hidden}
+.receipt-mini-icon i{color:var(--text3);font-size:12px}
+.receipt-mini-icon img{width:26px;height:26px;object-fit:cover}
+/* ── Create job card ── */
+.create-job-card{display:flex;align-items:center;justify-content:center;gap:8px;padding:16px;border:2px dashed var(--border2);border-radius:var(--radius);cursor:pointer;color:var(--text3);font-size:12px;transition:all 0.12s;background:transparent;margin-top:2px}
+.create-job-card:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+/* ── Toast ── */
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;color:#fff;transform:translateX(130%);transition:transform 0.22s ease;min-width:200px;max-width:300px;box-shadow:0 4px 16px rgba(0,0,0,0.18);pointer-events:auto}
+.toast.show{transform:translateX(0)}
+.toast-success{background:var(--accent)}
+.toast-error{background:var(--red)}
+.toast-info{background:var(--blue)}
+/* ── Insight group cards ── */
+.ins-group-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden}
+.ins-group-header{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;user-select:none}
+.ins-group-header:hover{background:var(--bg3)}
+.ins-group-body{display:none;padding:12px 16px;border-top:1px solid var(--border)}
+.ins-group-body.open{display:block}
+/* ── Daily chart ── */
+.daily-chart-wrap{margin:4px 0 8px;position:relative}
+.daily-chart-wrap svg{display:block;width:100%;overflow:visible}
+.chart-dot{cursor:pointer}
+/* ── Existing styles ── */
+.search-bar{flex:1;min-width:180px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 12px;font-size:12px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none}
+.search-bar:focus{border-color:var(--accent)}
+.search-bar::placeholder{color:var(--text3)}
+.filter-btn{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--bg2);color:var(--text2);transition:all 0.12s;font-family:'DM Sans',sans-serif}
+.filter-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.filter-btn:hover:not(.active){border-color:var(--border2);color:var(--text)}
+.doc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.doc-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;cursor:pointer;transition:all 0.12s}
+.doc-card:hover{border-color:var(--accent);transform:translateY(-1px)}
+.doc-card-img{height:80px;background:var(--bg3);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;margin-bottom:10px;border:1px solid var(--border);overflow:hidden;position:relative}
+.doc-card-img img{width:100%;height:100%;object-fit:cover}
+.doc-card-img i{font-size:22px;color:var(--text3)}
+.view-hint{position:absolute;inset:0;background:rgba(13,122,107,0.75);display:none;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:500;gap:4px;border-radius:var(--radius-sm)}
+.doc-card:hover .view-hint{display:flex}
+.export-layout{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.section-title{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:12px;font-weight:500}
+.form-group{margin-bottom:11px}
+.form-label{font-size:11px;color:var(--text2);margin-bottom:4px;display:block}
+.form-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;font-size:12px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none}
+.form-input:focus{border-color:var(--accent)}
+.form-input::placeholder{color:var(--text3)}
+.form-select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;font-size:12px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;cursor:pointer}
+.form-select:focus{border-color:var(--accent)}
+.format-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px}
+.format-btn{padding:12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg3);cursor:pointer;transition:all 0.12s;text-align:left}
+.format-btn.active{border-color:var(--accent);background:var(--accent-light)}
+.format-btn:hover:not(.active){border-color:var(--border2)}
+.format-name{font-size:12px;font-weight:500;color:var(--text);margin-bottom:1px}
+.format-desc{font-size:10px;color:var(--text3)}
+.account-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px}
+.account-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
+.account-row:last-child{border-bottom:none}
+.account-key{font-size:12px;color:var(--text2)}
+.account-val{font-size:12px;font-weight:500;color:var(--text)}
+.divider{height:1px;background:var(--border);margin:14px 0}
+.page{display:none}
+.page.active{display:block}
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.45);z-index:200;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border-radius:var(--radius);border:1px solid var(--border);padding:22px;width:420px;max-width:100%;margin:auto}
+.modal-wide{width:500px}
+.modal-sm{width:360px}
+.modal-title{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;margin-bottom:3px;color:var(--text)}
+.modal-sub{font-size:12px;color:var(--text3);margin-bottom:14px}
+.ai-bar{display:flex;align-items:center;justify-content:space-between;background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:14px}
+.upload-zone{border:2px dashed var(--accent-mid);border-radius:var(--radius-sm);padding:18px;text-align:center;cursor:pointer;transition:all 0.12s;background:var(--accent-light);margin-bottom:12px}
+.upload-zone:hover{border-color:var(--accent)}
+.upload-zone i{font-size:22px;color:var(--accent);margin-bottom:5px;display:block}
+.upload-zone p{font-size:12px;color:var(--text2);margin-bottom:2px}
+.upload-zone span{font-size:10px;color:var(--text3)}
+.modal-actions{display:flex;gap:8px;margin-top:14px;justify-content:flex-end}
+.tax-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ai-thinking{display:none;align-items:center;gap:8px;font-size:12px;color:var(--accent);padding:6px 0}
+.dot-pulse{display:flex;gap:3px}
+.dot-pulse span{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:dp 1.2s infinite}
+.dot-pulse span:nth-child(2){animation-delay:0.2s}
+.dot-pulse span:nth-child(3){animation-delay:0.4s}
+@keyframes dp{0%,80%,100%{opacity:0.2}40%{opacity:1}}
+.insight-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+.insight-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px}
+.insight-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:5px;font-weight:500}
+.insight-val{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text)}
+.insight-val.green{color:var(--green)}
+.insight-val.accent{color:var(--accent)}
+.cat-row{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.cat-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.cat-bar-wrap{flex:2;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden}
+.cat-bar{height:100%;border-radius:2px}
+.vendor-rank{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)}
+.vendor-rank:last-child{border-bottom:none}
+.rank-num{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.spending-detail{background:var(--bg3);border-radius:var(--radius-sm);padding:12px 14px;margin-top:10px}
+.receipt-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.detail-field{background:var(--bg3);border-radius:var(--radius-sm);padding:10px 12px}
+.detail-field-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:3px;font-weight:500}
+.detail-field-val{font-size:13px;font-weight:500;color:var(--text)}
+.edit-actions{display:flex;gap:8px}
+.pdf-preview{background:var(--red-bg);border:1px solid #F7C1C1;border-radius:var(--radius-sm);padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:12px;cursor:pointer;transition:all 0.12s}
+.pdf-preview:hover{background:#F7C1C1}
+.pdf-icon{width:38px;height:38px;background:#F7C1C1;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pdf-icon i{color:var(--red);font-size:18px}
+.img-preview{border-radius:var(--radius-sm);overflow:hidden;margin-bottom:12px;border:1px solid var(--border);max-height:260px;display:flex;align-items:center;justify-content:center;background:var(--bg3)}
+.img-preview img{max-width:100%;max-height:260px;object-fit:contain;display:block}
+.ai-error{font-size:11px;color:var(--red);padding:6px 10px;background:var(--red-bg);border-radius:var(--radius-sm);margin-bottom:10px;display:none}
+.dup-warning{font-size:11px;color:var(--amber);padding:6px 10px;background:var(--amber-bg);border-radius:var(--radius-sm);margin-bottom:10px;border:1px solid #F0C97E;display:none}
+/* ── Mobile Nav ── */
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:60px;background:var(--bg2);border-top:1px solid var(--border);z-index:150;align-items:stretch;padding-bottom:env(safe-area-inset-bottom,0px)}
+.mob-nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px 0;cursor:pointer;color:var(--text3);font-size:10px;font-weight:500;flex:1;transition:color 0.12s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.mob-nav-item i{font-size:21px;line-height:1}
+.mob-nav-item.active{color:var(--accent)}
+.mob-nav-item:active{opacity:0.65}
+/* ── FAB ── */
+.mobile-fab{display:none;position:fixed;bottom:72px;right:18px;width:52px;height:52px;border-radius:50%;background:var(--accent);color:#fff;border:none;cursor:pointer;z-index:151;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(13,122,107,0.45);font-size:24px;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:transform 0.12s}
+.mobile-fab:active{transform:scale(0.9)}
+/* ── Mobile responsive ── */
+@media(max-width:700px){
+  body{flex-direction:column}
+  /* Sidebar: hidden on mobile — use bottom nav instead */
+  .sidebar{display:none}
+  /* Mobile nav & FAB: visible */
+  .mobile-nav{display:flex}
+  .mobile-fab{display:flex}
+  /* Main content: no left margin, pad bottom for nav bar */
+  .main{margin-left:0;padding-bottom:68px}
+  /* Topbar */
+  .topbar{padding:14px 14px 0;flex-wrap:wrap;gap:8px}
+  .page-title{font-size:17px}
+  .page-sub{display:none}
+  .topbar > div:last-child{display:flex;gap:6px;width:100%}
+  .topbar > div:last-child .btn{flex:1;justify-content:center;font-size:11px;padding:8px 10px}
+  /* Content */
+  .content{padding:12px 14px 20px}
+  /* Stats grid: 2×2 */
+  .stats-grid{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+  .stat-value{font-size:18px}
+  .stat-card{padding:12px 14px}
+  /* Layout grid: stack */
+  .grid-2{grid-template-columns:1fr}
+  /* Doc card grid: 1 col */
+  .doc-grid{grid-template-columns:1fr 1fr;gap:8px}
+  /* Export stack */
+  .export-layout{grid-template-columns:1fr}
+  /* Tab bar: scrollable */
+  .tab-bar{gap:0;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tab-btn{flex:1;padding:10px 10px;font-size:11px;white-space:nowrap;min-width:80px}
+  /* Unassigned section */
+  .unassigned-grid{grid-template-columns:1fr}
+  .unassigned-hint{display:none}
+  /* Cards */
+  .job-card-right{gap:8px}
+  .job-stat-val{font-size:12px}
+  /* Buttons: bigger touch targets */
+  .btn{min-height:40px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+  .btn-sm{min-height:36px;padding:7px 12px;font-size:11px}
+  .assign-chip{padding:5px 10px;font-size:11px}
+  /* Filter row: horizontal scroll */
+  #doctab-all > div:first-child{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+  #doctab-all > div:first-child > div{flex-shrink:0}
+  /* Modals: full-width sheet from bottom */
+  .modal-overlay{padding:0;align-items:flex-end}
+  .modal{width:100%;border-radius:16px 16px 0 0;max-height:92vh;overflow-y:auto;margin:0}
+  /* Toasts: above mobile nav */
+  .toast-container{bottom:72px;right:14px;left:14px}
+  .toast{max-width:100%}
+  /* Insight grid: 2 col */
+  .insight-grid{grid-template-columns:1fr 1fr;gap:8px}
+  /* Three-col input grids → 2 cols on mobile */
+  .col-3{grid-template-columns:1fr 1fr!important}
+  /* Search + topbar row */
+  #doc-search{font-size:14px}
+  /* Alert banner */
+  .alert-banner{font-size:11px;padding:8px 12px}
+  .alert-banner-link{font-size:10px}
+  /* Upload zone */
+  .upload-zone{padding:20px 16px}
+  /* Chart area height */
+  .chart-area{height:90px}
+  /* Unassigned card */
+  .unassigned-card{padding:12px 14px}
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="logo"><div class="logo-icon">S</div><div class="logo-text">Slip</div></div>
+  <div class="nav">
+    <div class="nav-item active" onclick="showPage('dashboard',this)"><i class="ti ti-layout-dashboard"></i> Dashboard</div>
+    <div class="nav-item" onclick="showPage('documents',this)"><i class="ti ti-file-invoice"></i> Documents</div>
+    <div class="nav-item" onclick="showPage('insights',this)"><i class="ti ti-chart-line"></i> Insights</div>
+    <div class="nav-item" onclick="showPage('export',this)"><i class="ti ti-download"></i> Export</div>
+    <div class="nav-spacer"></div>
+    <div class="nav-divider"></div>
+    <div class="nav-item" onclick="showPage('account',this)"><i class="ti ti-user-circle"></i> My Account</div>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ══ DASHBOARD ══ -->
+<div id="page-dashboard" class="page active">
+  <div class="topbar">
+    <div><div class="page-title">Dashboard</div><div class="page-sub">Manage your receipts and invoices</div></div>
+    <button class="btn btn-primary" onclick="openUpload()"><i class="ti ti-plus"></i> Upload Receipt</button>
+  </div>
+  <div class="content">
+    <div id="unassigned-banner" class="alert-banner" onclick="showPage('documents',document.querySelectorAll('.nav-item')[1]);setDocTab('byjob')">
+      <i class="ti ti-alert-triangle"></i>
+      <span class="alert-banner-text" id="banner-text">You have unassigned receipts</span>
+      <span class="alert-banner-link">View in Documents →</span>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-label">Total Documents</div><div class="stat-value" id="dash-count">0</div><div class="stat-sub" id="dash-count-sub">0 this month</div></div>
+      <div class="stat-card accent-card"><div class="stat-label">Total Spend</div><div class="stat-value accent" id="dash-spend">$0.00</div><div class="stat-sub">All time</div></div>
+      <div class="stat-card"><div class="stat-label">Receipts</div><div class="stat-value" id="dash-receipts">0</div><div class="stat-sub" id="dash-jobs-sub">Across 0 jobs</div></div>
+      <div class="stat-card green-card"><div class="stat-label">Total Tax</div><div class="stat-value green" id="dash-tax">$0.00</div><div class="stat-sub">Est. write-off eligible</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Recent Receipts <a onclick="showPage('documents',document.querySelectorAll('.nav-item')[1])">View all →</a></div>
+        <div id="dash-recent"><div class="empty-state"><i class="ti ti-receipt-off"></i><p>No receipts yet.</p><button class="btn btn-primary btn-sm" onclick="openUpload()"><i class="ti ti-plus"></i> Upload Receipt</button></div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="card"><div class="card-title">Spend by Job</div><div id="dash-jobs-chart"><div style="font-size:12px;color:var(--text3);text-align:center;padding:16px 0">No job data yet</div></div></div>
+        <div class="card">
+          <div class="card-title">Monthly Spend</div>
+          <div class="chart-area" id="dash-monthly-chart"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DOCUMENTS ══ -->
+<div id="page-documents" class="page">
+  <div class="topbar">
+    <div><div class="page-title">Documents</div><div class="page-sub" id="doc-count-label">0 documents</div></div>
+    <div style="display:flex;gap:7px">
+      <button class="btn btn-ghost" onclick="openCreateJobModal()"><i class="ti ti-briefcase"></i> New Job</button>
+      <button class="btn btn-primary" onclick="openUpload()"><i class="ti ti-plus"></i> Upload</button>
+    </div>
+  </div>
+  <div class="content">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+      <input class="search-bar" id="doc-search" placeholder="Search vendors, job, PO, card..." oninput="renderDocs()" />
+    </div>
+    <div class="tab-bar">
+      <button class="tab-btn active" id="doctab-btn-byjob" onclick="setDocTab('byjob',this)"><i class="ti ti-briefcase" style="font-size:13px;margin-right:4px"></i>By Job</button>
+      <button class="tab-btn" id="doctab-btn-bypo" onclick="setDocTab('bypo',this)"><i class="ti ti-tag" style="font-size:13px;margin-right:4px"></i>By PO</button>
+      <button class="tab-btn" id="doctab-btn-all" onclick="setDocTab('all',this)"><i class="ti ti-layout-grid" style="font-size:13px;margin-right:4px"></i>All Receipts</button>
+    </div>
+
+    <!-- Tab: By Job -->
+    <div id="doctab-byjob" class="tab-content active">
+      <div id="unassigned-section-job" class="unassigned-section" style="display:none">
+        <div class="unassigned-header">
+          <i class="ti ti-alert-circle" style="color:var(--red);font-size:16px"></i>
+          <span class="unassigned-title">Unassigned Receipts</span>
+          <span class="unassigned-badge" id="unassigned-job-count">0</span>
+          <span class="unassigned-hint">Drag onto a job card or click Assign</span>
+        </div>
+        <div class="unassigned-grid" id="unassigned-job-grid"></div>
+      </div>
+      <div id="jobs-list"></div>
+      <div class="create-job-card" onclick="openCreateJobModal()">
+        <i class="ti ti-plus" style="font-size:16px"></i>
+        <span>Create New Job</span>
+      </div>
+    </div>
+
+    <!-- Tab: By PO -->
+    <div id="doctab-bypo" class="tab-content">
+      <div id="unassigned-section-po" class="unassigned-section" style="display:none">
+        <div class="unassigned-header">
+          <i class="ti ti-alert-circle" style="color:var(--red);font-size:16px"></i>
+          <span class="unassigned-title">Unassigned Receipts</span>
+          <span class="unassigned-badge" id="unassigned-po-count">0</span>
+          <span class="unassigned-hint">Drag onto a PO card or click Assign</span>
+        </div>
+        <div class="unassigned-grid" id="unassigned-po-grid"></div>
+      </div>
+      <div id="po-list"></div>
+      <div id="po-empty" style="display:none" class="empty-state" style="padding:32px">
+        <i class="ti ti-tag-off"></i><p>No PO numbers yet. Add a PO # when uploading a receipt.</p>
+      </div>
+      <div class="create-job-card" onclick="openCreatePOModal()" style="border-color:#C9C6F5;margin-top:2px">
+        <i class="ti ti-plus" style="font-size:16px;color:var(--purple)"></i>
+        <span style="color:var(--purple)">Create New PO</span>
+      </div>
+    </div>
+
+    <!-- Tab: All Receipts -->
+    <div id="doctab-all" class="tab-content">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
+        <button class="filter-btn active" data-filter="all" onclick="setFilter(this)">All</button>
+        <button class="filter-btn" data-filter="materials" onclick="setFilter(this)">Materials</button>
+        <button class="filter-btn" data-filter="tools" onclick="setFilter(this)">Tools</button>
+        <button class="filter-btn" data-filter="fuel" onclick="setFilter(this)">Fuel</button>
+        <button class="filter-btn" data-filter="meals" onclick="setFilter(this)">Meals</button>
+        <button class="filter-btn" data-filter="subcontractor" onclick="setFilter(this)">Subcontractor</button>
+        <div style="margin-left:auto;display:flex;gap:6px">
+          <select class="form-select" id="filter-job" style="width:auto;min-width:90px;font-size:11px;padding:5px 8px" onchange="renderAllReceipts()"><option value="">All Jobs</option></select>
+          <select class="form-select" id="filter-po" style="width:auto;min-width:90px;font-size:11px;padding:5px 8px" onchange="renderAllReceipts()"><option value="">All POs</option></select>
+          <select class="form-select" id="filter-card" style="width:auto;min-width:90px;font-size:11px;padding:5px 8px" onchange="renderAllReceipts()"><option value="">All Cards</option></select>
+        </div>
+      </div>
+      <div id="doc-grid" class="doc-grid"></div>
+      <div id="doc-empty" class="empty-state" style="padding:48px 20px;display:none"><i class="ti ti-files-off"></i><p>No documents found.</p><button class="btn btn-primary btn-sm" onclick="openUpload()"><i class="ti ti-plus"></i> Upload Receipt</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ INSIGHTS ══ -->
+<div id="page-insights" class="page">
+  <div class="topbar"><div><div class="page-title">Insights</div><div class="page-sub">Spending trends and tax summaries</div></div></div>
+  <div class="content">
+    <div class="tab-bar">
+      <button class="tab-btn active" id="instab-btn-overview" onclick="setInsTab('overview',this)"><i class="ti ti-chart-bar" style="font-size:13px;margin-right:4px"></i>Overview</button>
+      <button class="tab-btn" id="instab-btn-byjob" onclick="setInsTab('byjob',this)"><i class="ti ti-briefcase" style="font-size:13px;margin-right:4px"></i>By Job</button>
+      <button class="tab-btn" id="instab-btn-bypo" onclick="setInsTab('bypo',this)"><i class="ti ti-tag" style="font-size:13px;margin-right:4px"></i>By PO</button>
+      <button class="tab-btn" id="instab-btn-tax" onclick="setInsTab('tax',this)"><i class="ti ti-receipt-tax" style="font-size:13px;margin-right:4px"></i>Tax Summary</button>
+    </div>
+
+    <!-- Tab: Overview -->
+    <div id="instab-overview" class="tab-content active">
+      <div class="stats-grid">
+        <div class="stat-card accent-card"><div class="stat-label">This Month</div><div class="stat-value accent" id="ins-this">$0.00</div><div class="stat-sub" id="ins-this-sub">No prior data</div></div>
+        <div class="stat-card"><div class="stat-label">Last Month</div><div class="stat-value" id="ins-last">$0.00</div><div class="stat-sub" id="ins-last-sub">0 receipts</div></div>
+        <div class="stat-card"><div class="stat-label">GST This Month</div><div class="stat-value accent" id="ins-gst">$0.00</div><div class="stat-sub">Est. write-off</div></div>
+        <div class="stat-card green-card"><div class="stat-label">Total HST/GST</div><div class="stat-value green" id="ins-totaltax">$0.00</div><div class="stat-sub">All time</div></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Monthly Spending — click a bar</div>
+          <div class="chart-area" id="ins-monthly-chart"></div>
+          <div class="spending-detail">
+            <div style="font-size:12px;font-weight:500;color:var(--text);margin-bottom:8px" id="spending-detail-title">—</div>
+            <div class="daily-chart-wrap" id="daily-chart-wrap" style="display:none"></div>
+            <div id="spending-detail-content" style="font-size:12px;color:var(--text3)">Click a bar to see daily breakdown</div>
+          </div>
+          <div class="insight-grid">
+            <div class="insight-box"><div class="insight-label">Avg / Month</div><div class="insight-val" id="ins-avg">$0.00</div></div>
+            <div class="insight-box"><div class="insight-label">Biggest Category</div><div class="insight-val" style="font-size:12px;color:var(--text3)" id="ins-bigcat">None yet</div></div>
+            <div class="insight-box"><div class="insight-label">Month Trend</div><div class="insight-val" id="ins-trend">—</div></div>
+            <div class="insight-box"><div class="insight-label">Tax Write-offs</div><div class="insight-val green" id="ins-writeoff">$0.00</div></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="card"><div class="card-title">Top Categories</div><div id="ins-cats"><div class="empty-state" style="padding:16px"><i class="ti ti-tag-off"></i><p style="margin-bottom:0">No data yet</p></div></div></div>
+          <div class="card"><div class="card-title">Top Vendors</div><div id="ins-vendors"><div class="empty-state" style="padding:16px"><i class="ti ti-building-store"></i><p style="margin-bottom:0">No vendor data yet</p></div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: By Job -->
+    <div id="instab-byjob" class="tab-content">
+      <div id="ins-byjob-list-view">
+        <div class="stats-grid" style="margin-bottom:18px">
+          <div class="stat-card"><div class="stat-label">Total Jobs</div><div class="stat-value" id="insjob-count">0</div><div class="stat-sub">Active jobs</div></div>
+          <div class="stat-card accent-card"><div class="stat-label">Total Spend</div><div class="stat-value accent" id="insjob-spend">$0.00</div><div class="stat-sub">Across all jobs</div></div>
+          <div class="stat-card"><div class="stat-label">Avg per Job</div><div class="stat-value" id="insjob-avg">$0.00</div><div class="stat-sub">Average receipts</div></div>
+          <div class="stat-card green-card"><div class="stat-label">Total Tax</div><div class="stat-value green" id="insjob-tax">$0.00</div><div class="stat-sub">Est. write-off</div></div>
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Click a job to see its individual graph and stats</div>
+        <div id="ins-jobs-list"><div class="empty-state"><i class="ti ti-briefcase-off"></i><p>No jobs yet. Create a job in Documents.</p></div></div>
+      </div>
+      <div id="ins-byjob-detail-view" style="display:none"></div>
+    </div>
+
+    <!-- Tab: By PO -->
+    <div id="instab-bypo" class="tab-content">
+      <div id="ins-bypo-list-view">
+        <div class="stats-grid" style="margin-bottom:18px">
+          <div class="stat-card"><div class="stat-label">Total POs</div><div class="stat-value" id="inspo-count">0</div><div class="stat-sub">Unique PO numbers</div></div>
+          <div class="stat-card purple-card"><div class="stat-label">Total Spend</div><div class="stat-value purple" id="inspo-spend">$0.00</div><div class="stat-sub">Across all POs</div></div>
+          <div class="stat-card"><div class="stat-label">Avg per PO</div><div class="stat-value" id="inspo-avg">$0.00</div><div class="stat-sub">Average spend</div></div>
+          <div class="stat-card green-card"><div class="stat-label">Total Tax</div><div class="stat-value green" id="inspo-tax">$0.00</div><div class="stat-sub">Est. write-off</div></div>
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Click a PO to see its individual graph and stats</div>
+        <div id="ins-po-list"><div class="empty-state"><i class="ti ti-tag-off"></i><p>No PO numbers found. Add a PO # when uploading receipts.</p></div></div>
+      </div>
+      <div id="ins-bypo-detail-view" style="display:none"></div>
+    </div>
+
+    <!-- Tab: Tax Summary -->
+    <div id="instab-tax" class="tab-content">
+      <div class="stats-grid" style="margin-bottom:18px">
+        <div class="stat-card accent-card"><div class="stat-label">Total GST Paid</div><div class="stat-value accent" id="tax-gst-total">$0.00</div><div class="stat-sub">Input tax credits</div></div>
+        <div class="stat-card green-card"><div class="stat-label">Total HST Paid</div><div class="stat-value green" id="tax-hst-total">$0.00</div><div class="stat-sub">Input tax credits</div></div>
+        <div class="stat-card purple-card"><div class="stat-label">Total ITCs</div><div class="stat-value purple" id="tax-itc-total">$0.00</div><div class="stat-sub">Claimable from CRA</div></div>
+        <div class="stat-card"><div class="stat-label">Receipts with Tax</div><div class="stat-value" id="tax-count">0</div><div class="stat-sub">Tracked receipts</div></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px">Quarterly Breakdown</div>
+        <button class="btn btn-ghost btn-sm" onclick="exportTaxCSV()"><i class="ti ti-download"></i> Export Tax Report</button>
+      </div>
+      <div class="card" style="margin-bottom:18px;padding:0;overflow:hidden">
+        <table style="width:100%;border-collapse:collapse;font-size:12px" id="tax-quarter-table">
+          <thead>
+            <tr style="background:var(--bg3);border-bottom:1px solid var(--border)">
+              <th style="padding:10px 14px;text-align:left;font-weight:600;color:var(--text2)">Quarter</th>
+              <th style="padding:10px 14px;text-align:right;font-weight:600;color:var(--text2)">GST</th>
+              <th style="padding:10px 14px;text-align:right;font-weight:600;color:var(--text2)">HST</th>
+              <th style="padding:10px 14px;text-align:right;font-weight:600;color:var(--text2)">Total ITCs</th>
+              <th style="padding:10px 14px;text-align:right;font-weight:600;color:var(--text2)">Receipts</th>
+            </tr>
+          </thead>
+          <tbody id="tax-quarter-body"></tbody>
+        </table>
+      </div>
+      <div class="grid-2" style="margin-bottom:18px">
+        <div class="card">
+          <div class="card-title">By Job</div>
+          <div id="tax-by-job"><div class="empty-state" style="padding:16px"><i class="ti ti-briefcase-off"></i><p style="margin-bottom:0">No job data yet</p></div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">By Category</div>
+          <div id="tax-by-cat"><div class="empty-state" style="padding:16px"><i class="ti ti-tag-off"></i><p style="margin-bottom:0">No data yet</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ EXPORT ══ -->
+<div id="page-export" class="page">
+  <div class="topbar"><div><div class="page-title">Export Receipts</div><div class="page-sub">Export to QuickBooks, Jobber, or other apps</div></div></div>
+  <div class="content">
+    <div class="export-layout">
+      <div class="card">
+        <div class="section-title">Filter Receipts</div>
+        <div class="form-group"><label class="form-label">Date — From</label><input type="date" class="form-select" id="exp-from" /></div>
+        <div class="form-group"><label class="form-label">Date — To</label><input type="date" class="form-select" id="exp-to" /></div>
+        <div class="form-group"><label class="form-label">Card</label><select class="form-select" id="exp-card"><option value="">All cards</option></select></div>
+        <div class="form-group"><label class="form-label">Job Number</label><select class="form-select" id="exp-job"><option value="">All jobs</option></select></div>
+        <div class="form-group"><label class="form-label">PO Number</label><select class="form-select" id="exp-po"><option value="">All POs</option></select></div>
+        <div class="form-group"><label class="form-label">Vendor</label><select class="form-select" id="exp-vendor"><option value="">All vendors</option></select></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="card">
+          <div class="section-title">Export Format</div>
+          <div class="format-grid">
+            <div class="format-btn" onclick="selectFormat(this)"><div class="format-name">QuickBooks</div><div class="format-desc">Online/Desktop</div></div>
+            <div class="format-btn" onclick="selectFormat(this)"><div class="format-name">Jobber</div><div class="format-desc">Job costing</div></div>
+            <div class="format-btn" onclick="selectFormat(this)"><div class="format-name">Xero</div><div class="format-desc">Xero accounting</div></div>
+            <div class="format-btn active" onclick="selectFormat(this)"><div class="format-name">Generic CSV</div><div class="format-desc">Any application</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <div class="section-title" style="margin-bottom:0">Select Receipts</div>
+            <span style="font-size:11px;color:var(--text3)" id="export-count">0 match · 0 selected</span>
+          </div>
+          <div id="export-list"><div style="font-size:12px;color:var(--text3);text-align:center;padding:20px 0">No receipts yet</div></div>
+          <button class="btn btn-primary" style="width:100%;margin-top:12px;justify-content:center" onclick="doExport()"><i class="ti ti-download"></i> Export to CSV</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ACCOUNT ══ -->
+<div id="page-account" class="page">
+  <div class="topbar"><div><div class="page-title">My Account</div><div class="page-sub">Manage your account and linked emails</div></div></div>
+  <div class="content">
+    <div class="account-card">
+      <div class="section-title">Account Information</div>
+      <div class="account-row"><span class="account-key">Email</span><span class="account-val" id="acct-email" style="color:var(--text3);font-style:italic">Not signed in</span></div>
+      <div class="account-row"><span class="account-key">Plan</span><span class="account-val"><span class="tag tag-accent">Free</span></span></div>
+      <div class="account-row"><span class="account-key">Password</span><span><button class="btn btn-ghost btn-sm" onclick="document.getElementById('change-pw-modal').classList.add('open');document.getElementById('cp-password').focus()"><i class="ti ti-lock"></i> Change Password</button></span></div>
+      <div class="account-row"><span class="account-key">Session</span><span><button class="btn btn-danger btn-sm" onclick="logout()"><i class="ti ti-logout"></i> Sign Out</button></span></div>
+    </div>
+    <div class="account-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div><div class="section-title" style="margin-bottom:2px">Linked Emails</div><div style="font-size:11px;color:var(--text3)">Connect your inbox to auto-import receipts</div></div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-ghost btn-sm" onclick="connectOutlook()"><i class="ti ti-brand-windows"></i> Outlook</button>
+          <button class="btn btn-primary btn-sm" onclick="connectGmail()"><i class="ti ti-brand-gmail"></i> Gmail</button>
+        </div>
+      </div>
+      <div id="email-accounts">
+        <div style="text-align:center;padding:24px 16px;background:var(--bg3);border-radius:var(--radius-sm);border:1px dashed var(--border2)">
+          <i class="ti ti-mail-off" style="font-size:24px;color:var(--text3);display:block;margin-bottom:8px"></i>
+          <div style="font-size:12px;color:var(--text2);margin-bottom:4px">No email connected yet</div>
+          <div style="font-size:11px;color:var(--text3)">Link your Gmail to automatically pull in receipts</div>
+        </div>
+      </div>
+      <div id="sync-result" style="display:none;margin-top:10px;font-size:12px;padding:8px 12px;background:var(--accent-light);color:var(--accent);border-radius:var(--radius-sm);border:1px solid var(--accent-mid)"></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .main -->
+
+<!-- ══ MOBILE FAB ══ -->
+<button class="mobile-fab" onclick="openUpload()" aria-label="Upload receipt">
+  <i class="ti ti-plus"></i>
+</button>
+
+<!-- ══ MOBILE BOTTOM NAV ══ -->
+<nav class="mobile-nav">
+  <div class="mob-nav-item active" id="mnav-dashboard" onclick="showPage('dashboard',this)">
+    <i class="ti ti-layout-dashboard"></i><span>Home</span>
+  </div>
+  <div class="mob-nav-item" id="mnav-documents" onclick="showPage('documents',this)">
+    <i class="ti ti-file-invoice"></i><span>Docs</span>
+  </div>
+  <div class="mob-nav-item" id="mnav-insights" onclick="showPage('insights',this)">
+    <i class="ti ti-chart-line"></i><span>Insights</span>
+  </div>
+  <div class="mob-nav-item" id="mnav-export" onclick="showPage('export',this)">
+    <i class="ti ti-download"></i><span>Export</span>
+  </div>
+  <div class="mob-nav-item" id="mnav-account" onclick="showPage('account',this)">
+    <i class="ti ti-user-circle"></i><span>Account</span>
+  </div>
+</nav>
+
+<!-- ══ UPLOAD MODAL ══ -->
+<div class="modal-overlay" id="upload-modal">
+  <div class="modal">
+    <div class="modal-title">Upload Receipt</div>
+    <div class="modal-sub">Attach a photo or fill in manually</div>
+    <div class="upload-zone" onclick="document.getElementById('file-input').click()">
+      <i class="ti ti-camera"></i>
+      <p>Take a photo or upload a file</p>
+      <span>PNG, JPG, PDF — camera opens on mobile</span>
+      <input type="file" id="file-input" style="display:none" accept="image/*,.pdf" capture="environment" onchange="fileSelected(this)" />
+      <div id="file-name" style="margin-top:6px;font-size:11px;color:var(--accent);font-weight:500"></div>
+    </div>
+    <div id="upload-preview" style="display:none;margin-bottom:12px"></div>
+    <div class="ai-bar">
+      <div>
+        <div style="font-size:12px;color:var(--accent);font-weight:500"><i class="ti ti-sparkles" style="font-size:13px;margin-right:4px"></i>AI Autofill</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:1px">Backend reads your receipt and fills in the fields</div>
+      </div>
+      <button class="btn btn-ai btn-sm" id="autofill-btn" onclick="runAutofill()"><i class="ti ti-wand"></i> Autofill</button>
+    </div>
+    <div class="ai-thinking" id="ai-thinking"><div class="dot-pulse"><span></span><span></span><span></span></div><span>AI is reading your receipt...</span></div>
+    <div class="ai-error" id="ai-error"></div>
+    <div class="form-group"><label class="form-label">Vendor Name</label><input type="text" class="form-input" id="u-vendor" placeholder="e.g. Home Depot" /></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div class="form-group"><label class="form-label">Amount ($)</label><input type="number" class="form-input" id="u-amount" placeholder="0.00" /></div>
+      <div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="u-date" /></div>
+    </div>
+    <div class="tax-row">
+      <div class="form-group"><label class="form-label">GST ($)</label><input type="number" class="form-input" id="u-gst" placeholder="0.00" /></div>
+      <div class="form-group"><label class="form-label">HST ($)</label><input type="number" class="form-input" id="u-hst" placeholder="0.00" /></div>
+    </div>
+    <div class="form-group"><label class="form-label">Category</label>
+      <select class="form-select" id="u-category">
+        <option value="">None</option>
+        <option value="materials">Materials</option>
+        <option value="tools">Tools</option>
+        <option value="fuel">Fuel</option>
+        <option value="subcontractor">Subcontractor</option>
+        <option value="meals">Meals</option>
+        <option value="office">Office</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Link to Job <span style="color:var(--text3)">(optional)</span></label>
+      <select class="form-select" id="u-job-link" onchange="onJobLinkChange()"><option value="">No job selected</option></select>
+    </div>
+    <div class="col-3" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div class="form-group"><label class="form-label">Job #</label><input type="text" class="form-input" id="u-job" placeholder="e.g. JOB-42" /></div>
+      <div class="form-group"><label class="form-label">PO #</label><input type="text" class="form-input" id="u-po" placeholder="e.g. PO-1001" /></div>
+      <div class="form-group"><label class="form-label">Card</label><input type="text" class="form-input" id="u-card" placeholder="e.g. Visa 4242" /></div>
+    </div>
+    <div class="form-group"><label class="form-label">Notes</label><input type="text" class="form-input" id="u-ref" placeholder="Any additional notes" /></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeUpload()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveReceipt()"><i class="ti ti-check"></i> Save Receipt</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ AUTH MODAL ══ -->
+<div class="modal-overlay" id="auth-modal" style="background:rgba(0,0,0,0.7)">
+  <div class="modal" style="width:360px">
+    <div style="display:flex;gap:0;margin-bottom:18px;background:var(--bg3);border-radius:var(--radius-sm);padding:4px">
+      <button class="btn" id="tab-login" style="flex:1;justify-content:center;font-size:12px" onclick="switchTab('login')">Sign In</button>
+      <button class="btn" id="tab-signup" style="flex:1;justify-content:center;font-size:12px;background:transparent;color:var(--text2)" onclick="switchTab('signup')">Create Account</button>
+    </div>
+    <div class="modal-title" id="auth-title">Sign In</div>
+    <div class="modal-sub">Track your expenses and receipts</div>
+    <div class="form-group" style="margin-top:14px"><label class="form-label">Email</label><input type="email" class="form-input" id="auth-email" placeholder="you@example.com" /></div>
+    <div class="form-group">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <label class="form-label" style="margin-bottom:0">Password</label>
+        <a id="forgot-link" onclick="showForgotPassword()" style="font-size:11px;color:var(--accent);cursor:pointer">Forgot password?</a>
+      </div>
+      <input type="password" class="form-input" id="auth-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitAuth()" />
+    </div>
+    <div id="auth-error" style="display:none;font-size:11px;color:var(--red);background:var(--red-bg);padding:7px 10px;border-radius:var(--radius-sm);margin-bottom:8px"></div>
+    <div id="auth-success" style="display:none;font-size:11px;color:var(--accent);background:var(--accent-light);padding:7px 10px;border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid var(--accent-mid)"></div>
+    <button class="btn btn-primary" id="auth-submit" style="width:100%;justify-content:center;margin-top:4px" onclick="submitAuth()">Sign In</button>
+    <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:12px" id="auth-switch">Don't have an account? <a onclick="switchTab('signup')" style="color:var(--accent);cursor:pointer">Create one</a></div>
+  </div>
+</div>
+
+<!-- ══ VIEW / EDIT RECEIPT MODAL ══ -->
+<div class="modal-overlay" id="view-modal">
+  <div class="modal modal-wide">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+      <div style="flex:1;min-width:0">
+        <div class="modal-title" id="vm-title">Receipt</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px" id="vm-sub"></div>
+        <div id="vm-pills" style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px"></div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="closeView()" style="margin-left:10px;flex-shrink:0"><i class="ti ti-x"></i></button>
+    </div>
+    <div id="vm-file-area"></div>
+    <div id="vm-view-mode">
+      <div class="receipt-detail-grid">
+        <div class="detail-field"><div class="detail-field-label">Amount</div><div class="detail-field-val" id="vm-amount">—</div></div>
+        <div class="detail-field"><div class="detail-field-label">Date</div><div class="detail-field-val" id="vm-date">—</div></div>
+        <div class="detail-field"><div class="detail-field-label">GST</div><div class="detail-field-val" id="vm-gst">—</div></div>
+        <div class="detail-field"><div class="detail-field-label">HST</div><div class="detail-field-val" id="vm-hst">—</div></div>
+      </div>
+      <div class="receipt-detail-grid" style="margin-bottom:12px">
+        <div class="detail-field"><div class="detail-field-label">Job #</div><div class="detail-field-val" id="vm-job">—</div></div>
+        <div class="detail-field"><div class="detail-field-label">PO #</div><div class="detail-field-val" id="vm-po">—</div></div>
+        <div class="detail-field"><div class="detail-field-label">Card</div><div class="detail-field-val" id="vm-card">—</div></div>
+        <div class="detail-field"><div class="detail-field-label">Category</div><div class="detail-field-val" id="vm-cat">—</div></div>
+      </div>
+      <div id="vm-notes-row" style="margin-bottom:12px;display:none">
+        <div class="detail-field"><div class="detail-field-label">Notes</div><div class="detail-field-val" id="vm-notes">—</div></div>
+      </div>
+      <div class="edit-actions">
+        <button class="btn btn-ghost" style="flex:1;justify-content:center" onclick="openReassignModal()"><i class="ti ti-arrows-exchange"></i> Reassign</button>
+        <button class="btn btn-ghost" style="flex:1;justify-content:center" onclick="openEditMode()"><i class="ti ti-edit"></i> Edit</button>
+        <button class="btn btn-danger" style="flex:1;justify-content:center" onclick="deleteReceipt()"><i class="ti ti-trash"></i> Delete</button>
+      </div>
+    </div>
+    <div id="vm-edit-mode" style="display:none">
+      <div class="form-group"><label class="form-label">Vendor Name</label><input type="text" class="form-input" id="e-vendor" /></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="form-group"><label class="form-label">Amount ($)</label><input type="number" class="form-input" id="e-amount" /></div>
+        <div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="e-date" /></div>
+      </div>
+      <div class="tax-row">
+        <div class="form-group"><label class="form-label">GST ($)</label><input type="number" class="form-input" id="e-gst" /></div>
+        <div class="form-group"><label class="form-label">HST ($)</label><input type="number" class="form-input" id="e-hst" /></div>
+      </div>
+      <div class="form-group"><label class="form-label">Category</label>
+        <select class="form-select" id="e-category">
+          <option value="">None</option>
+          <option value="materials">Materials</option>
+          <option value="tools">Tools</option>
+          <option value="fuel">Fuel</option>
+          <option value="subcontractor">Subcontractor</option>
+          <option value="meals">Meals</option>
+          <option value="office">Office</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="col-3" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <div class="form-group"><label class="form-label">Job #</label><input type="text" class="form-input" id="e-job" /></div>
+        <div class="form-group"><label class="form-label">PO #</label><input type="text" class="form-input" id="e-po" /></div>
+        <div class="form-group"><label class="form-label">Card</label><input type="text" class="form-input" id="e-card" /></div>
+      </div>
+      <div class="form-group"><label class="form-label">Notes</label><input type="text" class="form-input" id="e-ref" /></div>
+      <div class="edit-actions">
+        <button class="btn btn-ghost" style="flex:1;justify-content:center" onclick="cancelEdit()"><i class="ti ti-x"></i> Cancel</button>
+        <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="saveEdit()"><i class="ti ti-check"></i> Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CREATE JOB MODAL ══ -->
+<div class="modal-overlay" id="create-job-modal">
+  <div class="modal modal-sm">
+    <div class="modal-title">Create New Job</div>
+    <div class="modal-sub">Add a job to organize your receipts</div>
+    <div class="dup-warning" id="dup-warning"><i class="ti ti-alert-triangle" style="margin-right:4px"></i>A job with this name already exists.</div>
+    <div class="form-group"><label class="form-label">Job Name <span style="color:var(--red)">*</span></label><input type="text" class="form-input" id="cj-name" placeholder="e.g. 123 Main St Renovation" oninput="checkDupJob()" /></div>
+    <div class="form-group"><label class="form-label">Job # <span style="color:var(--text3)">(optional)</span></label><input type="text" class="form-input" id="cj-number" placeholder="e.g. JOB-001" /></div>
+    <div class="form-group"><label class="form-label">Budget ($) <span style="color:var(--text3)">(optional)</span></label><input type="number" class="form-input" id="cj-budget" placeholder="0.00" /></div>
+    <div class="form-group"><label class="form-label">Start Date <span style="color:var(--text3)">(optional)</span></label><input type="date" class="form-input" id="cj-date" /></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeCreateJobModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveNewJob()"><i class="ti ti-briefcase"></i> Create Job</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ASSIGN RECEIPT MODAL ══ -->
+<div class="modal-overlay" id="assign-modal">
+  <div class="modal modal-sm">
+    <div class="modal-title">Assign Receipt</div>
+    <div id="assign-modal-sub" class="modal-sub"></div>
+    <div class="form-group">
+      <label class="form-label">Assign to Job <span style="color:var(--text3)">(optional)</span></label>
+      <select class="form-select" id="assign-job-select"><option value="">No job</option></select>
+    </div>
+    <div style="text-align:center;font-size:11px;color:var(--text3);margin:4px 0 8px">You can set both — job and PO are independent</div>
+    <div class="form-group">
+      <label class="form-label">PO Number <span style="color:var(--text3)">(optional)</span></label>
+      <input type="text" class="form-input" id="assign-po-input" placeholder="e.g. PO-1001" />
+    </div>
+    <div id="assign-error" style="display:none;font-size:11px;color:var(--red);background:var(--red-bg);padding:6px 10px;border-radius:var(--radius-sm);margin-bottom:8px">Please select a job or enter a PO number.</div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeAssignModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveAssignment()"><i class="ti ti-check"></i> Assign</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CREATE PO MODAL ══ -->
+<div class="modal-overlay" id="create-po-modal">
+  <div class="modal modal-sm">
+    <div class="modal-title">Create New PO</div>
+    <div class="modal-sub">Add a purchase order to group receipts</div>
+    <div class="form-group"><label class="form-label">PO Number <span style="color:var(--red)">*</span></label><input type="text" class="form-input" id="cp-number" placeholder="e.g. PO-1001" /></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeCreatePOModal()">Cancel</button>
+      <button class="btn btn-purple" onclick="saveNewPO()"><i class="ti ti-tag"></i> Create PO</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CONFIRM ASSIGN MODAL (drag/drop) ══ -->
+<div class="modal-overlay" id="confirm-assign-modal">
+  <div class="modal modal-sm">
+    <div class="modal-title">Confirm Assignment</div>
+    <div id="confirm-assign-body" class="modal-sub" style="margin-bottom:20px;font-size:13px;color:var(--text);line-height:1.5"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeConfirmAssign()">Cancel</button>
+      <button class="btn btn-primary" onclick="executeAssignment()"><i class="ti ti-check"></i> Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SET NEW PASSWORD MODAL (recovery link) ══ -->
+<div class="modal-overlay" id="recovery-modal" style="background:rgba(0,0,0,0.7)">
+  <div class="modal" style="width:360px">
+    <div class="modal-title">Set New Password</div>
+    <div class="modal-sub">Enter a new password for your account</div>
+    <div class="form-group" style="margin-top:14px">
+      <label class="form-label">New Password</label>
+      <input type="password" class="form-input" id="rec-password" placeholder="At least 6 characters" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Confirm Password</label>
+      <input type="password" class="form-input" id="rec-confirm" placeholder="Repeat password" onkeydown="if(event.key==='Enter')submitRecovery()" />
+    </div>
+    <div id="rec-error" style="display:none;font-size:11px;color:var(--red);background:var(--red-bg);padding:7px 10px;border-radius:var(--radius-sm);margin-bottom:8px"></div>
+    <button class="btn btn-primary" id="rec-submit" style="width:100%;justify-content:center;margin-top:4px" onclick="submitRecovery()"><i class="ti ti-lock-check"></i> Set Password</button>
+  </div>
+</div>
+
+<!-- ══ CHANGE PASSWORD MODAL (logged in) ══ -->
+<div class="modal-overlay" id="change-pw-modal">
+  <div class="modal modal-sm">
+    <div class="modal-title">Change Password</div>
+    <div class="modal-sub">Set a new password for your account</div>
+    <div class="form-group" style="margin-top:14px">
+      <label class="form-label">New Password</label>
+      <input type="password" class="form-input" id="cp-password" placeholder="At least 6 characters" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Confirm Password</label>
+      <input type="password" class="form-input" id="cp-confirm" placeholder="Repeat password" onkeydown="if(event.key==='Enter')submitChangePassword()" />
+    </div>
+    <div id="cp-error" style="display:none;font-size:11px;color:var(--red);background:var(--red-bg);padding:7px 10px;border-radius:var(--radius-sm);margin-bottom:8px"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="document.getElementById('change-pw-modal').classList.remove('open')">Cancel</button>
+      <button class="btn btn-primary" id="cp-submit" onclick="submitChangePassword()"><i class="ti ti-lock-check"></i> Change Password</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TOAST CONTAINER ══ -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+// ── Config ──
+var API = '';
+
+// ── State ──
+var receipts = [];
+var jobs = [];
+var currentFilter = 'all';
+var currentDocTab = 'byjob';
+var currentInsTab = 'overview';
+var selectedMonthIdx = 5;
+var viewingId = null;
+var draggedReceiptId = null;
+var assignReceiptId = null;
+var confirmAssignData = null;
+var insJobDetailId = null;
+var insPODetailId = null;
+var _chartGradId = 0;
+function nextGradId() { return 'cg' + (++_chartGradId); }
+var currentFileData = null;
+var currentFileName = null;
+var currentFileType = null;
+var authToken = localStorage.getItem('slip_token');
+var currentUser = null;
+var authMode = 'login';
+// Touch drag state
+var _touchDragActive = false;
+var _touchClone = null;
+
+// ── API Helper ──
+async function apiCall(method, path, body, isFormData) {
+  var headers = {};
+  if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
+  if (!isFormData && body) headers['Content-Type'] = 'application/json';
+  var res = await fetch(API + path, {
+    method: method,
+    headers: headers,
+    body: isFormData ? body : (body ? JSON.stringify(body) : undefined)
+  });
+  if (res.status === 401) {
+    authToken = null; localStorage.removeItem('slip_token');
+    showAuthModal(); throw new Error('Session expired. Please sign in again.');
+  }
+  var data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+
+// ── Toast ──
+function showToast(msg, type) {
+  type = type || 'success';
+  var container = document.getElementById('toast-container');
+  var t = document.createElement('div');
+  t.className = 'toast toast-' + type;
+  var icon = type === 'success' ? 'check' : (type === 'error' ? 'alert-circle' : 'info-circle');
+  t.innerHTML = '<i class="ti ti-' + icon + '"></i><span>' + msg + '</span>';
+  container.appendChild(t);
+  setTimeout(function() { t.classList.add('show'); }, 10);
+  setTimeout(function() { t.classList.remove('show'); setTimeout(function() { t.remove(); }, 300); }, 3200);
+}
+
+// ── Auth ──
+function showAuthModal() { document.getElementById('auth-modal').classList.add('open'); }
+function hideAuthModal() { document.getElementById('auth-modal').classList.remove('open'); }
+
+function switchTab(mode) {
+  authMode = mode;
+  var isLogin = mode === 'login';
+  document.getElementById('auth-title').textContent = isLogin ? 'Sign In' : 'Create Account';
+  document.getElementById('auth-submit').textContent = isLogin ? 'Sign In' : 'Create Account';
+  document.getElementById('auth-switch').innerHTML = isLogin
+    ? "Don't have an account? <a onclick=\"switchTab('signup')\" style=\"color:var(--accent);cursor:pointer\">Create one</a>"
+    : "Already have an account? <a onclick=\"switchTab('login')\" style=\"color:var(--accent);cursor:pointer\">Sign in</a>";
+  document.getElementById('tab-login').style.background = isLogin ? 'var(--bg2)' : 'transparent';
+  document.getElementById('tab-login').style.color = isLogin ? 'var(--text)' : 'var(--text2)';
+  document.getElementById('tab-signup').style.background = isLogin ? 'transparent' : 'var(--bg2)';
+  document.getElementById('tab-signup').style.color = isLogin ? 'var(--text2)' : 'var(--text)';
+  document.getElementById('auth-error').style.display = 'none';
+}
+
+async function submitAuth() {
+  var email = document.getElementById('auth-email').value.trim();
+  var password = document.getElementById('auth-password').value;
+  var errEl = document.getElementById('auth-error');
+  var btn = document.getElementById('auth-submit');
+  if (!email || !password) { errEl.textContent = 'Email and password required.'; errEl.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = authMode === 'login' ? 'Signing in...' : 'Creating account...';
+  errEl.style.display = 'none';
+  try {
+    var res = await fetch(API + (authMode === 'login' ? '/auth/login' : '/auth/signup'), {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    var data = await res.json();
+    if (data.error) throw new Error(data.error);
+    if (!data.session) throw new Error(authMode === 'signup' ? 'Check your email to confirm, then sign in.' : 'Login failed');
+    authToken = data.session.access_token;
+    currentUser = data.user;
+    localStorage.setItem('slip_token', authToken);
+    hideAuthModal();
+    updateAccountPage();
+    await loadAll();
+    loadEmailAccounts();
+  } catch (err) {
+    errEl.textContent = err.message; errEl.style.display = 'block';
+  }
+  btn.disabled = false; btn.textContent = authMode === 'login' ? 'Sign In' : 'Create Account';
+}
+
+// ── Forgot Password ──
+async function showForgotPassword() {
+  var email = document.getElementById('auth-email').value.trim();
+  var errEl = document.getElementById('auth-error');
+  var sucEl = document.getElementById('auth-success');
+  errEl.style.display = 'none'; sucEl.style.display = 'none';
+  if (!email) {
+    errEl.textContent = 'Enter your email address above first.';
+    errEl.style.display = 'block'; return;
+  }
+  var link = document.getElementById('forgot-link');
+  link.textContent = 'Sending...';
+  try {
+    await fetch(API + '/auth/forgot-password', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    sucEl.textContent = '✓ Reset link sent to ' + email + ' — check your inbox.';
+    sucEl.style.display = 'block';
+  } catch(e) {
+    errEl.textContent = 'Could not send reset email. Try again.';
+    errEl.style.display = 'block';
+  }
+  link.textContent = 'Forgot password?';
+}
+
+// ── Recovery: detect reset link on page load ──
+var _recoveryTokens = null;
+function checkRecoveryLink() {
+  if (!window.location.search.includes('recovery=1')) return false;
+  var hash = window.location.hash.substring(1);
+  var params = {};
+  hash.split('&').forEach(function(p) { var kv = p.split('='); if(kv[0]) params[kv[0]] = decodeURIComponent(kv[1]||''); });
+  if (params.type === 'recovery' && params.access_token) {
+    _recoveryTokens = { access_token: params.access_token, refresh_token: params.refresh_token || '' };
+    // Clean URL
+    history.replaceState(null, '', '/');
+    document.getElementById('recovery-modal').classList.add('open');
+    document.getElementById('rec-password').focus();
+    return true;
+  }
+  return false;
+}
+
+async function submitRecovery() {
+  var pw = document.getElementById('rec-password').value;
+  var confirm = document.getElementById('rec-confirm').value;
+  var errEl = document.getElementById('rec-error');
+  errEl.style.display = 'none';
+  if (!pw || pw.length < 6) { errEl.textContent = 'Password must be at least 6 characters.'; errEl.style.display = 'block'; return; }
+  if (pw !== confirm) { errEl.textContent = 'Passwords do not match.'; errEl.style.display = 'block'; return; }
+  var btn = document.getElementById('rec-submit');
+  btn.disabled = true; btn.textContent = 'Updating...';
+  try {
+    var res = await fetch(API + '/auth/set-password', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ access_token: _recoveryTokens.access_token, refresh_token: _recoveryTokens.refresh_token, password: pw })
+    });
+    var data = await res.json();
+    if (data.error) throw new Error(data.error);
+    document.getElementById('recovery-modal').classList.remove('open');
+    _recoveryTokens = null;
+    showToast('Password updated — please sign in', 'success');
+    showAuthModal();
+  } catch(err) {
+    errEl.textContent = err.message; errEl.style.display = 'block';
+  }
+  btn.disabled = false; btn.innerHTML = '<i class="ti ti-lock-check"></i> Set Password';
+}
+
+// ── Change Password (logged in) ──
+async function submitChangePassword() {
+  var pw = document.getElementById('cp-password').value;
+  var confirm = document.getElementById('cp-confirm').value;
+  var errEl = document.getElementById('cp-error');
+  errEl.style.display = 'none';
+  if (!pw || pw.length < 6) { errEl.textContent = 'Password must be at least 6 characters.'; errEl.style.display = 'block'; return; }
+  if (pw !== confirm) { errEl.textContent = 'Passwords do not match.'; errEl.style.display = 'block'; return; }
+  var btn = document.getElementById('cp-submit');
+  btn.disabled = true; btn.textContent = 'Saving...';
+  try {
+    await apiCall('POST', '/auth/change-password', { password: pw });
+    document.getElementById('change-pw-modal').classList.remove('open');
+    document.getElementById('cp-password').value = '';
+    document.getElementById('cp-confirm').value = '';
+    showToast('Password changed successfully');
+  } catch(err) {
+    errEl.textContent = err.message; errEl.style.display = 'block';
+  }
+  btn.disabled = false; btn.innerHTML = '<i class="ti ti-lock-check"></i> Change Password';
+}
+
+async function logout() {
+  try { await apiCall('POST', '/auth/logout'); } catch(e) {}
+  authToken = null; currentUser = null; localStorage.removeItem('slip_token');
+  receipts = []; jobs = [];
+  updateDashboard(); renderDocs(); updateInsights(); renderExport();
+  showAuthModal();
+}
+
+function updateAccountPage() {
+  if (currentUser) {
+    var el = document.getElementById('acct-email');
+    if (el) { el.textContent = currentUser.email; el.style.fontStyle = 'normal'; el.style.color = 'var(--text)'; }
+  }
+}
+
+// ── Data Loading ──
+async function loadAll() {
+  try {
+    var results = await Promise.all([
+      apiCall('GET', '/receipts'),
+      apiCall('GET', '/jobs')
+    ]);
+    receipts = results[0];
+    jobs = results[1];
+    updateDashboard();
+    renderDocs();
+    updateInsights();
+    renderExport();
+  } catch(err) { console.error('Load failed:', err); }
+}
+
+// ── Helpers ──
+function taxAmt(r) { return (parseFloat(r.gst) || 0) + (parseFloat(r.hst) || 0); }
+function isUnassigned(r) { return !r.job_id && !(r.po_number && r.po_number.trim()); }
+function fmt(n) { return '$' + (parseFloat(n) || 0).toFixed(2); }
+
+function dataURLtoBlob(dataURL) {
+  var arr = dataURL.split(','), mime = arr[0].match(/:(.*?);/)[1];
+  var bstr = atob(arr[1]), n = bstr.length, u8 = new Uint8Array(n);
+  while (n--) u8[n] = bstr.charCodeAt(n);
+  return new Blob([u8], { type: mime });
+}
+
+function getLast6Months() {
+  var out = [];
+  var now = new Date();
+  for (var i = 5; i >= 0; i--) {
+    var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    out.push({ label: d.toLocaleString('en', { month: 'short' }), month: d.getMonth(), year: d.getFullYear() });
+  }
+  return out;
+}
+
+// ── Navigation ──
+function showPage(name, el) {
+  document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+  document.getElementById('page-' + name).classList.add('active');
+  // Sync sidebar nav (desktop)
+  if (el && el.classList.contains('nav-item')) {
+    document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+    el.classList.add('active');
+  }
+  // Sync mobile bottom nav
+  document.querySelectorAll('.mob-nav-item').forEach(function(n) { n.classList.remove('active'); });
+  var mob = document.getElementById('mnav-' + name);
+  if (mob) mob.classList.add('active');
+  if (name === 'documents') renderDocs();
+  if (name === 'insights') updateInsights();
+  if (name === 'export') renderExport();
+}
+
+// ── Tab Switchers ──
+function setDocTab(tab, el) {
+  currentDocTab = tab;
+  ['byjob','bypo','all'].forEach(function(t) {
+    document.getElementById('doctab-' + t).classList.toggle('active', t === tab);
+    var btn = document.getElementById('doctab-btn-' + t);
+    if (btn) btn.classList.toggle('active', t === tab);
+  });
+  renderDocs();
+}
+
+function setInsTab(tab, el) {
+  currentInsTab = tab;
+  ['overview','byjob','bypo','tax'].forEach(function(t) {
+    document.getElementById('instab-' + t).classList.toggle('active', t === tab);
+    var btn = document.getElementById('instab-btn-' + t);
+    if (btn) btn.classList.toggle('active', t === tab);
+  });
+  if (tab === 'overview') updateInsights();
+  if (tab === 'byjob') renderInsByJob();
+  if (tab === 'bypo') renderInsByPO();
+  if (tab === 'tax') renderTaxSummary();
+}
+
+// ── Dashboard ──
+function updateDashboard() {
+  var total = receipts.reduce(function(s,r){ return s + (parseFloat(r.amount)||0); }, 0);
+  var tax = receipts.reduce(function(s,r){ return s + taxAmt(r); }, 0);
+  var unassigned = receipts.filter(isUnassigned);
+  var now = new Date();
+  var thisMonth = receipts.filter(function(r) {
+    if (!r.date) return false;
+    var d = new Date(r.date + 'T00:00:00');
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  });
+
+  document.getElementById('dash-count').textContent = receipts.length;
+  document.getElementById('dash-count-sub').textContent = thisMonth.length + ' this month';
+  document.getElementById('dash-spend').textContent = fmt(total);
+  document.getElementById('dash-receipts').textContent = receipts.length;
+  document.getElementById('dash-jobs-sub').textContent = 'Across ' + jobs.length + ' job' + (jobs.length !== 1 ? 's' : '');
+  document.getElementById('dash-tax').textContent = fmt(tax);
+
+  // Unassigned banner
+  var banner = document.getElementById('unassigned-banner');
+  if (unassigned.length) {
+    banner.classList.add('show');
+    document.getElementById('banner-text').textContent = unassigned.length + ' receipt' + (unassigned.length !== 1 ? 's are' : ' is') + ' unassigned — assign to a job or PO';
+  } else {
+    banner.classList.remove('show');
+  }
+
+  // Recent receipts
+  var rc = document.getElementById('dash-recent');
+  if (!receipts.length) {
+    rc.innerHTML = '<div class="empty-state"><i class="ti ti-receipt-off"></i><p>No receipts yet.</p><button class="btn btn-primary btn-sm" onclick="openUpload()"><i class="ti ti-plus"></i> Upload Receipt</button></div>';
+  } else {
+    rc.innerHTML = receipts.slice(0,4).map(function(r) {
+      var amt = parseFloat(r.amount) || 0;
+      var t = taxAmt(r);
+      var isPdf = r.file_url && r.file_url.toLowerCase().includes('.pdf');
+      var thumb = r.file_url && !isPdf ? '<img src="' + r.file_url + '" style="width:32px;height:32px;object-fit:cover" />' : (isPdf ? '<i class="ti ti-file-type-pdf" style="color:var(--red)"></i>' : '<i class="ti ti-receipt"></i>');
+      var unFlag = isUnassigned(r) ? '<span class="tag tag-red" style="margin-left:4px">Unassigned</span>' : '';
+      return '<div class="receipt-row" onclick="openReceiptView(\'' + r.id + '\')">' +
+        '<div class="receipt-icon">' + thumb + '</div>' +
+        '<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (r.vendor || 'Unknown') + unFlag + '</div>' +
+        '<div style="font-size:11px;color:var(--text3);margin-top:2px">' + (r.date || '') + '</div></div>' +
+        '<div style="text-align:right;flex-shrink:0"><div style="font-size:13px;font-weight:600;font-family:Syne,sans-serif">$' + amt.toFixed(2) + '</div>' + (t ? '<div style="font-size:10px;color:var(--accent)">+$' + t.toFixed(2) + ' tax</div>' : '') + '</div></div>';
+    }).join('');
+  }
+
+  // Spend by job chart
+  var jobsWithReceipts = jobs.filter(function(j) { return receipts.some(function(r){ return r.job_id === j.id; }); });
+  var jc = document.getElementById('dash-jobs-chart');
+  if (!jobsWithReceipts.length) {
+    jc.innerHTML = '<div style="font-size:12px;color:var(--text3);text-align:center;padding:16px 0">No job data yet</div>';
+  } else {
+    var jobTotals = jobsWithReceipts.map(function(j) {
+      var s = receipts.filter(function(r){ return r.job_id === j.id; }).reduce(function(a,r){ return a+(parseFloat(r.amount)||0); }, 0);
+      return { name: j.name, total: s };
+    }).sort(function(a,b){ return b.total - a.total; }).slice(0,4);
+    var maxJ = jobTotals[0] ? jobTotals[0].total : 1;
+    jc.innerHTML = jobTotals.map(function(j) {
+      return '<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px">' + j.name + '</span><span style="font-weight:600;font-family:Syne,sans-serif;flex-shrink:0">' + fmt(j.total) + '</span></div>' +
+        '<div style="height:4px;background:var(--bg3);border-radius:2px;overflow:hidden"><div style="height:100%;width:' + (j.total/maxJ*100).toFixed(1) + '%;background:var(--accent);border-radius:2px"></div></div></div>';
+    }).join('');
+  }
+
+  // Dashboard monthly chart
+  buildMonthlyBars('dash-monthly-chart', false);
+}
+
+// ── Monthly bar chart builder ──
+function buildMonthlyBars(containerId, clickable) {
+  var months = getLast6Months();
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  var totals = months.map(function(m) {
+    return receipts.filter(function(r) {
+      if (!r.date) return false;
+      var d = new Date(r.date + 'T00:00:00');
+      return d.getFullYear() === m.year && d.getMonth() === m.month;
+    }).reduce(function(s,r){ return s + (parseFloat(r.amount)||0); }, 0);
+  });
+  var maxVal = Math.max.apply(null, totals.concat([1]));
+  el.innerHTML = months.map(function(m, i) {
+    var pct = Math.max(totals[i]/maxVal*100, 2).toFixed(1);
+    var clickAttr = clickable ? ' onclick="selectMonthByIdx(' + i + ')"' : '';
+    return '<div class="bar-wrap"' + clickAttr + '><div class="bar-inner"><div class="bar' + (clickable && i === selectedMonthIdx ? ' active' : '') + '" id="ibar-' + i + '" style="height:' + pct + '%"></div></div><div class="bar-label">' + m.label + '</div></div>';
+  }).join('');
+}
+
+// ── Documents ──
+function renderDocs() {
+  var search = (document.getElementById('doc-search') || {value:''}).value.toLowerCase().trim();
+  document.getElementById('doc-count-label').textContent = receipts.length + ' document' + (receipts.length !== 1 ? 's' : '');
+  if (currentDocTab === 'byjob') renderByJob(search);
+  else if (currentDocTab === 'bypo') renderByPO(search);
+  else renderAllReceipts(search);
+}
+
+// ── By Job Tab ──
+function renderByJob(search) {
+  var unassigned = receipts.filter(function(r) {
+    return isUnassigned(r) && matchesSearch(r, search);
+  });
+  var secEl = document.getElementById('unassigned-section-job');
+  var gridEl = document.getElementById('unassigned-job-grid');
+  var cntEl = document.getElementById('unassigned-job-count');
+  var allUnassigned = receipts.filter(isUnassigned);
+  if (allUnassigned.length) {
+    secEl.style.display = 'block';
+    cntEl.textContent = allUnassigned.length;
+    gridEl.innerHTML = allUnassigned.map(function(r) { return renderUnassignedCard(r); }).join('');
+    bindDragHandlers();
+  } else {
+    secEl.style.display = 'none';
+  }
+
+  var listEl = document.getElementById('jobs-list');
+  if (!jobs.length) {
+    listEl.innerHTML = '<div class="empty-state" style="padding:32px"><i class="ti ti-briefcase-off"></i><p>No jobs yet. Click "Create New Job" to get started.</p></div>';
+    return;
+  }
+  listEl.innerHTML = jobs.map(function(j) {
+    var jReceipts = receipts.filter(function(r){ return r.job_id === j.id; });
+    if (search && !jReceipts.some(function(r){ return matchesSearch(r,search); }) && !j.name.toLowerCase().includes(search) && !(j.job_number||'').toLowerCase().includes(search)) return '';
+    var spend = jReceipts.reduce(function(s,r){ return s+(parseFloat(r.amount)||0); }, 0);
+    var gstT = jReceipts.reduce(function(s,r){ return s+(parseFloat(r.gst)||0); }, 0);
+    var hstT = jReceipts.reduce(function(s,r){ return s+(parseFloat(r.hst)||0); }, 0);
+    var budgetBar = '';
+    if (j.budget) {
+      var pct = Math.min(spend / j.budget * 100, 100).toFixed(1);
+      var over = spend > j.budget;
+      budgetBar = '<div class="budget-row"><span>' + fmt(spend) + ' spent</span><span>Budget: ' + fmt(j.budget) + '</span></div>' +
+        '<div class="budget-bar-wrap"><div class="budget-bar-fill' + (over?' over':'') + '" style="width:' + pct + '%"></div></div>';
+    }
+    var taxRow = (gstT || hstT) ? '<div class="tax-mini"><span><strong>GST:</strong> ' + fmt(gstT) + '</span><span><strong>HST:</strong> ' + fmt(hstT) + '</span><span style="margin-left:auto;color:var(--accent);font-weight:600">Total tax: ' + fmt(gstT+hstT) + '</span></div>' : '';
+    var jobPOs = [...new Set(jReceipts.map(function(r){ return r.po_number; }).filter(Boolean))];
+    var poTags = jobPOs.length ? '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;padding-top:2px"><span style="font-size:10px;color:var(--text3);margin-right:2px;align-self:center">POs:</span>' + jobPOs.map(function(po){ return '<span class="tag tag-po" style="cursor:pointer" onclick="setDocTab(\'bypo\')">' + esc(po) + '</span>'; }).join('') + '</div>' : '';
+    var miniRows = jReceipts.slice(0,5).map(function(r){ return renderMiniRow(r); }).join('');
+    var moreLink = jReceipts.length > 5 ? '<div style="font-size:11px;color:var(--accent);text-align:center;margin-top:4px;cursor:pointer" onclick="setDocTab(\'all\')">+' + (jReceipts.length-5) + ' more — View all</div>' : '';
+    var emptyBody = !jReceipts.length ? '<div style="font-size:12px;color:var(--text3);text-align:center;padding:12px 0">No receipts on this job yet. Drag unassigned receipts here or click Assign.</div>' : '';
+
+    return '<div class="job-card" id="jcard-' + j.id + '" ondragover="onJobDragOver(event,\'' + j.id + '\')" ondragleave="onJobDragLeave(\'' + j.id + '\')" ondrop="onJobDrop(event,\'' + j.id + '\')">' +
+      '<div class="job-card-header" onclick="toggleJobCard(\'' + j.id + '\')">' +
+      '<div class="job-card-icon"><i class="ti ti-briefcase"></i></div>' +
+      '<div style="flex:1;min-width:0"><div class="job-name">' + esc(j.name) + '</div><div class="job-meta">' + (j.job_number ? 'Job # ' + esc(j.job_number) + ' · ' : '') + jReceipts.length + ' receipt' + (jReceipts.length!==1?'s':'') + '</div></div>' +
+      '<div class="job-card-right"><div><div class="job-stat-val">' + fmt(spend) + '</div><div class="job-stat-lbl">spent</div></div></div>' +
+      '<button class="btn btn-ghost btn-sm" style="margin-left:6px;flex-shrink:0;color:var(--text3);padding:5px 7px" onclick="event.stopPropagation();deleteJob(\'' + j.id + '\',\'' + esc(j.name) + '\')" title="Delete job"><i class="ti ti-trash" style="font-size:14px"></i></button>' +
+      '<i class="ti ti-chevron-down job-chevron" id="jchev-' + j.id + '"></i></div>' +
+      '<div class="job-card-body" id="jbody-' + j.id + '">' + budgetBar + taxRow + poTags + miniRows + moreLink + emptyBody + '</div></div>';
+  }).join('');
+  bindDragHandlers();
+}
+
+// ── By PO Tab ──
+function renderByPO(search) {
+  var allUnassigned = receipts.filter(isUnassigned);
+  var secEl = document.getElementById('unassigned-section-po');
+  var gridEl = document.getElementById('unassigned-po-grid');
+  var cntEl = document.getElementById('unassigned-po-count');
+  if (allUnassigned.length) {
+    secEl.style.display = 'block';
+    cntEl.textContent = allUnassigned.length;
+    gridEl.innerHTML = allUnassigned.map(function(r){ return renderUnassignedCard(r); }).join('');
+    bindDragHandlers();
+  } else {
+    secEl.style.display = 'none';
+  }
+
+  var grouped = {};
+  receipts.forEach(function(r) {
+    if (r.po_number && r.po_number.trim()) {
+      var k = r.po_number.trim();
+      if (!grouped[k]) grouped[k] = [];
+      grouped[k].push(r);
+    }
+  });
+  // Include known POs (created via Create PO modal) even if they have no receipts yet
+  var knownPOs = getKnownPOs();
+  knownPOs.forEach(function(po) { if (!grouped[po]) grouped[po] = []; });
+  var pos = Object.keys(grouped).sort();
+  var listEl = document.getElementById('po-list');
+  var emptyEl = document.getElementById('po-empty');
+  if (!pos.length) {
+    listEl.innerHTML = '';
+    if (emptyEl) emptyEl.style.display = 'block';
+  } else {
+    if (emptyEl) emptyEl.style.display = 'none';
+  }
+  var safeId = function(s){ return s.replace(/[^a-zA-Z0-9]/g,'_'); };
+  listEl.innerHTML = pos.map(function(po) {
+    var recs = grouped[po] || [];
+    if (search && !recs.some(function(r){ return matchesSearch(r,search); }) && !po.toLowerCase().includes(search)) return '';
+    var spend = recs.reduce(function(s,r){ return s+(parseFloat(r.amount)||0); }, 0);
+    var gstT = recs.reduce(function(s,r){ return s+(parseFloat(r.gst)||0); }, 0);
+    var hstT = recs.reduce(function(s,r){ return s+(parseFloat(r.hst)||0); }, 0);
+    var sid = safeId(po);
+    var taxRow = (gstT||hstT) ? '<div class="tax-mini"><span><strong>GST:</strong> ' + fmt(gstT) + '</span><span><strong>HST:</strong> ' + fmt(hstT) + '</span></div>' : '';
+    // Show linked jobs inside PO card
+    var poJobIds = [...new Set(recs.map(function(r){ return r.job_id; }).filter(Boolean))];
+    var poJobs = poJobIds.map(function(id){ return jobs.find(function(j){ return j.id===id; }); }).filter(Boolean);
+    var jobTags = poJobs.length ? '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;padding-top:2px"><span style="font-size:10px;color:var(--text3);margin-right:2px;align-self:center">Jobs:</span>' + poJobs.map(function(j){ return '<span class="tag tag-job" style="cursor:pointer" onclick="setDocTab(\'byjob\')">' + esc(j.name) + '</span>'; }).join('') + '</div>' : '';
+    var miniRows = recs.slice(0,5).map(function(r){ return renderMiniRow(r); }).join('');
+    var moreLink = recs.length > 5 ? '<div style="font-size:11px;color:var(--purple);text-align:center;margin-top:4px;cursor:pointer" onclick="setDocTab(\'all\')">+' + (recs.length-5) + ' more — View all</div>' : '';
+    var emptyPO = !recs.length ? '<div style="font-size:12px;color:var(--text3);text-align:center;padding:12px 0">No receipts on this PO yet. Drag unassigned receipts here or click Assign.</div>' : '';
+    return '<div class="po-card" id="pocard-' + sid + '" data-po="' + esc(po) + '" ondragover="onPODragOver(event,\'' + esc(po) + '\')" ondragleave="onPODragLeave(\'' + sid + '\')" ondrop="onPODrop(event,\'' + esc(po) + '\')">' +
+      '<div class="po-card-header" onclick="togglePOCard(\'' + sid + '\')">' +
+      '<div class="po-card-icon"><i class="ti ti-tag"></i></div>' +
+      '<div style="flex:1;min-width:0"><div class="po-name">' + esc(po) + '</div><div class="po-meta">' + recs.length + ' receipt' + (recs.length!==1?'s':'') + (recs.length===0?' — drag receipts here':'') + '</div></div>' +
+      '<div style="margin-right:8px;text-align:right"><div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700">' + fmt(spend) + '</div><div style="font-size:10px;color:var(--text3)">total spend</div></div>' +
+      '<i class="ti ti-chevron-down po-chevron" id="pochev-' + sid + '"></i></div>' +
+      '<div class="po-card-body" id="pobody-' + sid + '">' + taxRow + jobTags + miniRows + moreLink + emptyPO + '</div></div>';
+  }).join('');
+  bindDragHandlers();
+}
+
+// ── All Receipts Tab ──
+function renderAllReceipts(search) {
+  search = search || (document.getElementById('doc-search')||{value:''}).value.toLowerCase().trim();
+  populateDocFilters();
+  var filterJob = (document.getElementById('filter-job')||{value:''}).value;
+  var filterPo = (document.getElementById('filter-po')||{value:''}).value;
+  var filterCard = (document.getElementById('filter-card')||{value:''}).value;
+  var filtered = receipts.filter(function(r) {
+    var ms = !search || matchesSearch(r, search);
+    var mf = currentFilter === 'all' || r.category === currentFilter;
+    var mj = !filterJob || r.job_number === filterJob;
+    var mp = !filterPo || r.po_number === filterPo;
+    var mc = !filterCard || r.card === filterCard;
+    return ms && mf && mj && mp && mc;
+  });
+  var grid = document.getElementById('doc-grid');
+  var empty = document.getElementById('doc-empty');
+  if (!grid) return;
+  if (!filtered.length) { grid.style.display = 'none'; if(empty) empty.style.display = 'block'; return; }
+  grid.style.display = 'grid'; if(empty) empty.style.display = 'none';
+  grid.innerHTML = filtered.map(function(r) {
+    var isPdf = r.file_url && r.file_url.toLowerCase().includes('.pdf');
+    var thumb = r.file_url && !isPdf ? '<img src="' + r.file_url + '" alt="Receipt" />' : (isPdf ? '<i class="ti ti-file-type-pdf" style="font-size:24px;color:var(--red)"></i>' : '<i class="ti ti-receipt" style="font-size:22px;color:var(--text3)"></i>');
+    var amt = parseFloat(r.amount)||0;
+    var tags = '';
+    if (isUnassigned(r)) tags += '<span class="tag tag-red">Unassigned</span>';
+    if (r.job_number) tags += '<span class="tag tag-job">' + esc(r.job_number) + '</span>';
+    if (r.po_number) tags += '<span class="tag tag-po">' + esc(r.po_number) + '</span>';
+    if (r.card) tags += '<span class="tag tag-card">' + esc(r.card) + '</span>';
+    if (r.category && !isUnassigned(r)) tags += '<span class="tag tag-accent">' + r.category + '</span>';
+    return '<div class="doc-card" onclick="openReceiptView(\'' + r.id + '\')"><div class="doc-card-img">' + thumb + '<div class="view-hint"><i class="ti ti-eye" style="font-size:14px"></i> View</div></div>' +
+      '<div style="font-size:12px;font-weight:500;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(r.vendor||'Unknown') + '</div>' +
+      '<div style="font-size:11px;color:var(--text3);margin-bottom:6px">' + (r.date||'') + '</div>' +
+      '<div style="font-family:Syne,sans-serif;font-weight:700;font-size:15px;margin-bottom:7px">$' + amt.toFixed(2) + '</div>' +
+      '<div style="display:flex;gap:3px;flex-wrap:wrap">' + tags + '</div></div>';
+  }).join('');
+}
+
+function setFilter(el) {
+  currentFilter = el.dataset.filter;
+  document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('active'); });
+  el.classList.add('active');
+  renderAllReceipts();
+}
+
+function populateDocFilters() {
+  var jobNums = [...new Set(receipts.map(function(r){ return r.job_number; }).filter(Boolean))].sort();
+  var poNums = [...new Set(receipts.map(function(r){ return r.po_number; }).filter(Boolean))].sort();
+  var cards = [...new Set(receipts.map(function(r){ return r.card; }).filter(Boolean))].sort();
+  var fj = document.getElementById('filter-job');
+  var fp = document.getElementById('filter-po');
+  var fc = document.getElementById('filter-card');
+  if (!fj) return;
+  var curJ = fj.value, curP = fp.value, curC = fc.value;
+  fj.innerHTML = '<option value="">All Jobs</option>' + jobNums.map(function(j){ return '<option value="' + esc(j) + '">' + esc(j) + '</option>'; }).join('');
+  fp.innerHTML = '<option value="">All POs</option>' + poNums.map(function(p){ return '<option value="' + esc(p) + '">' + esc(p) + '</option>'; }).join('');
+  fc.innerHTML = '<option value="">All Cards</option>' + cards.map(function(c){ return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join('');
+  fj.value = curJ; fp.value = curP; fc.value = curC;
+}
+
+// ── Render helpers ──
+function matchesSearch(r, search) {
+  if (!search) return true;
+  return (r.vendor||'').toLowerCase().includes(search) ||
+    (r.job_number||'').toLowerCase().includes(search) ||
+    (r.po_number||'').toLowerCase().includes(search) ||
+    (r.card||'').toLowerCase().includes(search) ||
+    (r.reference||'').toLowerCase().includes(search) ||
+    (r.date||'').includes(search);
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function renderUnassignedCard(r) {
+  var amt = parseFloat(r.amount)||0;
+  return '<div class="unassigned-card" draggable="true" data-id="' + r.id + '" onclick="openReceiptView(\'' + r.id + '\')" style="cursor:pointer">' +
+    '<div class="unassigned-vendor">' + esc(r.vendor||'Unknown') + '</div>' +
+    '<div class="unassigned-meta">' + (r.date||'No date') + '</div>' +
+    '<div class="unassigned-amt">$' + amt.toFixed(2) + '</div>' +
+    '<button class="assign-chip" onclick="event.stopPropagation();openAssignModal(\'' + r.id + '\')"><i class="ti ti-link" style="font-size:10px"></i> Assign</button></div>';
+}
+
+function renderMiniRow(r) {
+  var amt = parseFloat(r.amount)||0;
+  var isPdf = r.file_url && r.file_url.toLowerCase().includes('.pdf');
+  var thumb = r.file_url && !isPdf ? '<img src="' + r.file_url + '" />' : (isPdf ? '<i class="ti ti-file-type-pdf" style="color:var(--red);font-size:12px"></i>' : '<i class="ti ti-receipt" style="font-size:12px"></i>');
+  return '<div class="receipt-mini" onclick="openReceiptView(\'' + r.id + '\')">' +
+    '<div class="receipt-mini-icon">' + thumb + '</div>' +
+    '<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(r.vendor||'Unknown') + '</div>' +
+    '<div style="font-size:10px;color:var(--text3)">' + (r.date||'') + '</div></div>' +
+    '<div style="font-family:Syne,sans-serif;font-size:12px;font-weight:700;flex-shrink:0">$' + amt.toFixed(2) + '</div></div>';
+}
+
+// ── Toggle job / PO cards ──
+function toggleJobCard(jobId) {
+  var body = document.getElementById('jbody-' + jobId);
+  var chev = document.getElementById('jchev-' + jobId);
+  if (!body) return;
+  body.classList.toggle('open');
+  if (chev) chev.style.transform = body.classList.contains('open') ? 'rotate(180deg)' : '';
+}
+
+function togglePOCard(sid) {
+  var body = document.getElementById('pobody-' + sid);
+  var chev = document.getElementById('pochev-' + sid);
+  if (!body) return;
+  body.classList.toggle('open');
+  if (chev) chev.style.transform = body.classList.contains('open') ? 'rotate(180deg)' : '';
+}
+
+// ── Drag & Drop ──
+function bindDragHandlers() {
+  document.querySelectorAll('.unassigned-card[draggable]').forEach(function(card) {
+    card.ondragstart = function(e) {
+      draggedReceiptId = card.dataset.id;
+      card.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    };
+    card.ondragend = function() { card.classList.remove('dragging'); };
+    bindTouchDrag(card);
+  });
+}
+
+// ── Touch Drag (mobile) ──
+function bindTouchDrag(card) {
+  var startX, startY, isDragging;
+  card.addEventListener('touchstart', function(e) {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    isDragging = false;
+    draggedReceiptId = card.dataset.id;
+  }, { passive: true });
+
+  card.addEventListener('touchmove', function(e) {
+    var x = e.touches[0].clientX, y = e.touches[0].clientY;
+    var dx = x - startX, dy = y - startY;
+    if (!isDragging && Math.sqrt(dx*dx + dy*dy) > 12) {
+      isDragging = true;
+      _touchDragActive = true;
+      card.classList.add('dragging');
+      _touchClone = card.cloneNode(true);
+      _touchClone.style.cssText = 'position:fixed;z-index:9999;pointer-events:none;opacity:0.88;transform:rotate(3deg) scale(1.04);width:' + card.offsetWidth + 'px;box-shadow:0 8px 28px rgba(0,0,0,0.22);border-radius:8px;left:-999px;top:-999px;';
+      document.body.appendChild(_touchClone);
+    }
+    if (!isDragging) return;
+    e.preventDefault();
+    _touchClone.style.left = (x - _touchClone.offsetWidth / 2) + 'px';
+    _touchClone.style.top = (y - 50) + 'px';
+    // Find drop target under finger
+    _touchClone.style.visibility = 'hidden';
+    var el = document.elementFromPoint(x, y);
+    _touchClone.style.visibility = '';
+    document.querySelectorAll('.job-card.drag-over,.po-card.drag-over').forEach(function(c){ c.classList.remove('drag-over'); });
+    if (el) {
+      var jc = el.closest('[id^="jcard-"]');
+      var pc = el.closest('[id^="pocard-"]');
+      if (jc) jc.classList.add('drag-over');
+      if (pc) pc.classList.add('drag-over');
+    }
+  }, { passive: false });
+
+  card.addEventListener('touchend', function(e) {
+    card.classList.remove('dragging');
+    if (_touchClone) { document.body.removeChild(_touchClone); _touchClone = null; }
+    if (!isDragging) { draggedReceiptId = null; _touchDragActive = false; return; }
+    isDragging = false; _touchDragActive = false;
+    var x = e.changedTouches[0].clientX, y = e.changedTouches[0].clientY;
+    var el = document.elementFromPoint(x, y);
+    document.querySelectorAll('.job-card.drag-over,.po-card.drag-over').forEach(function(c){ c.classList.remove('drag-over'); });
+    if (!el || !draggedReceiptId) { draggedReceiptId = null; return; }
+    var r = receipts.find(function(x){ return x.id === draggedReceiptId; });
+    var jobCardEl = el.closest('[id^="jcard-"]');
+    var poCardEl = el.closest('[id^="pocard-"]');
+    if (jobCardEl) {
+      var jobId = jobCardEl.id.replace('jcard-', '');
+      var job = jobs.find(function(j){ return j.id === jobId; });
+      if (job && r) {
+        confirmAssignData = { receiptId: draggedReceiptId, type: 'job', jobId: jobId };
+        document.getElementById('confirm-assign-body').innerHTML = 'Assign <strong>' + esc(r.vendor||'this receipt') + '</strong> to job <strong>' + esc(job.name) + '</strong>?';
+        document.getElementById('confirm-assign-modal').classList.add('open');
+      }
+    } else if (poCardEl) {
+      var po = poCardEl.dataset.po;
+      if (po && r) {
+        confirmAssignData = { receiptId: draggedReceiptId, type: 'po', poNumber: po };
+        document.getElementById('confirm-assign-body').innerHTML = 'Assign <strong>' + esc(r.vendor||'this receipt') + '</strong> to PO <strong>' + esc(po) + '</strong>?';
+        document.getElementById('confirm-assign-modal').classList.add('open');
+      }
+    }
+    draggedReceiptId = null;
+  });
+}
+
+function onJobDragOver(e, jobId) {
+  e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+  var card = document.getElementById('jcard-' + jobId);
+  if (card) card.classList.add('drag-over');
+}
+function onJobDragLeave(jobId) {
+  var card = document.getElementById('jcard-' + jobId);
+  if (card) card.classList.remove('drag-over');
+}
+function onJobDrop(e, jobId) {
+  e.preventDefault();
+  var card = document.getElementById('jcard-' + jobId);
+  if (card) card.classList.remove('drag-over');
+  if (!draggedReceiptId) return;
+  var job = jobs.find(function(j){ return j.id === jobId; });
+  var r = receipts.find(function(x){ return x.id === draggedReceiptId; });
+  if (!job || !r) return;
+  confirmAssignData = { receiptId: draggedReceiptId, type: 'job', jobId: jobId };
+  document.getElementById('confirm-assign-body').innerHTML =
+    'Assign <strong>' + esc(r.vendor||'this receipt') + '</strong> to job <strong>' + esc(job.name) + '</strong>?';
+  document.getElementById('confirm-assign-modal').classList.add('open');
+  draggedReceiptId = null;
+}
+
+function onPODragOver(e, po) {
+  e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+  var sid = po.replace(/[^a-zA-Z0-9]/g,'_');
+  var card = document.getElementById('pocard-' + sid);
+  if (card) card.classList.add('drag-over');
+}
+function onPODragLeave(sid) {
+  var card = document.getElementById('pocard-' + sid);
+  if (card) card.classList.remove('drag-over');
+}
+function onPODrop(e, po) {
+  e.preventDefault();
+  var sid = po.replace(/[^a-zA-Z0-9]/g,'_');
+  var card = document.getElementById('pocard-' + sid);
+  if (card) card.classList.remove('drag-over');
+  if (!draggedReceiptId) return;
+  var r = receipts.find(function(x){ return x.id === draggedReceiptId; });
+  if (!r) return;
+  confirmAssignData = { receiptId: draggedReceiptId, type: 'po', poNumber: po };
+  document.getElementById('confirm-assign-body').innerHTML =
+    'Assign <strong>' + esc(r.vendor||'this receipt') + '</strong> to PO <strong>' + esc(po) + '</strong>?';
+  document.getElementById('confirm-assign-modal').classList.add('open');
+  draggedReceiptId = null;
+}
+
+function closeConfirmAssign() {
+  document.getElementById('confirm-assign-modal').classList.remove('open');
+  confirmAssignData = null;
+}
+
+async function executeAssignment() {
+  if (!confirmAssignData) return;
+  var d = confirmAssignData;
+  closeConfirmAssign();
+  try {
+    var updates = {};
+    if (d.type === 'job') {
+      var job = jobs.find(function(j){ return j.id === d.jobId; });
+      updates.job_id = d.jobId;
+      updates.job_number = job ? job.job_number : null;
+    } else {
+      updates.po_number = d.poNumber;
+    }
+    var updated = await apiCall('PUT', '/receipts/' + d.receiptId, updates);
+    var r = receipts.find(function(x){ return x.id === d.receiptId; });
+    if (r) Object.assign(r, updated);
+    renderDocs(); updateDashboard(); updateInsights();
+    showToast('Receipt assigned successfully');
+  } catch(err) { showToast('Failed to assign: ' + err.message, 'error'); }
+}
+
+// ── Known POs (localStorage) ──
+function getKnownPOs() {
+  var key = 'slip_pos_' + (currentUser ? currentUser.id : 'default');
+  try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) { return []; }
+}
+function saveKnownPO(po) {
+  var key = 'slip_pos_' + (currentUser ? currentUser.id : 'default');
+  var known = getKnownPOs();
+  if (!known.includes(po)) { known.push(po); localStorage.setItem(key, JSON.stringify(known)); }
+}
+function removeKnownPO(po) {
+  var key = 'slip_pos_' + (currentUser ? currentUser.id : 'default');
+  var known = getKnownPOs().filter(function(p){ return p !== po; });
+  localStorage.setItem(key, JSON.stringify(known));
+}
+
+// ── Create PO Modal ──
+function openCreatePOModal() { document.getElementById('create-po-modal').classList.add('open'); setTimeout(function(){ document.getElementById('cp-number').focus(); }, 50); }
+function closeCreatePOModal() { document.getElementById('create-po-modal').classList.remove('open'); document.getElementById('cp-number').value = ''; }
+function saveNewPO() {
+  var num = document.getElementById('cp-number').value.trim();
+  if (!num) { document.getElementById('cp-number').focus(); return; }
+  saveKnownPO(num);
+  closeCreatePOModal();
+  renderDocs();
+  showToast('PO "' + num + '" created');
+}
+
+// ── Create Job Modal ──
+function openCreateJobModal() { document.getElementById('create-job-modal').classList.add('open'); document.getElementById('cj-name').focus(); }
+function closeCreateJobModal() {
+  document.getElementById('create-job-modal').classList.remove('open');
+  ['cj-name','cj-number','cj-budget','cj-date'].forEach(function(id){ var e=document.getElementById(id); if(e) e.value=''; });
+  document.getElementById('dup-warning').style.display = 'none';
+}
+
+function checkDupJob() {
+  var name = document.getElementById('cj-name').value.trim().toLowerCase();
+  var dup = jobs.some(function(j){ return j.name.toLowerCase() === name; });
+  document.getElementById('dup-warning').style.display = dup ? 'block' : 'none';
+}
+
+async function saveNewJob() {
+  var name = document.getElementById('cj-name').value.trim();
+  if (!name) { document.getElementById('cj-name').focus(); return; }
+  var btn = document.querySelector('#create-job-modal .btn-primary');
+  btn.disabled = true; btn.textContent = 'Creating...';
+  try {
+    var job = await apiCall('POST', '/jobs', {
+      name: name,
+      job_number: document.getElementById('cj-number').value.trim() || null,
+      budget: parseFloat(document.getElementById('cj-budget').value) || null,
+      start_date: document.getElementById('cj-date').value || null
+    });
+    jobs.unshift(job);
+    closeCreateJobModal();
+    renderDocs(); updateDashboard();
+    showToast('Job "' + name + '" created');
+  } catch(err) { showToast('Failed to create job: ' + err.message, 'error'); }
+  btn.disabled = false; btn.innerHTML = '<i class="ti ti-briefcase"></i> Create Job';
+}
+
+// ── Delete Job ──
+async function deleteJob(jobId, jobName) {
+  if (!confirm('Delete job "' + jobName + '"?\n\nReceipts assigned to this job will become unassigned. This cannot be undone.')) return;
+  try {
+    await apiCall('DELETE', '/jobs/' + jobId);
+    jobs = jobs.filter(function(j){ return j.id !== jobId; });
+    // Unlink receipts locally so UI updates immediately
+    receipts.forEach(function(r){ if (r.job_id === jobId) { r.job_id = null; r.job_number = null; } });
+    renderDocs(); updateDashboard(); updateInsights();
+    showToast('Job "' + jobName + '" deleted');
+  } catch(err) { showToast('Failed to delete job: ' + err.message, 'error'); }
+}
+
+// ── Assign Receipt Modal ──
+function openAssignModal(receiptId) {
+  assignReceiptId = receiptId;
+  var r = receipts.find(function(x){ return x.id === receiptId; });
+  document.getElementById('assign-modal-sub').textContent = r ? (r.vendor || 'Unknown') + (r.amount ? ' — $' + parseFloat(r.amount).toFixed(2) : '') : '';
+  var sel = document.getElementById('assign-job-select');
+  sel.innerHTML = '<option value="">No job</option>' + jobs.map(function(j){
+    return '<option value="' + j.id + '">' + esc(j.name) + (j.job_number ? ' (' + esc(j.job_number) + ')' : '') + '</option>';
+  }).join('');
+  if (r && r.job_id) sel.value = r.job_id;
+  var poEl = document.getElementById('assign-po-input');
+  if (poEl) poEl.value = (r && r.po_number) || '';
+  document.getElementById('assign-error').style.display = 'none';
+  document.getElementById('assign-modal').classList.add('open');
+}
+
+function openReassignModal() {
+  if (viewingId) { closeView(); openAssignModal(viewingId); }
+}
+
+function closeAssignModal() {
+  document.getElementById('assign-modal').classList.remove('open');
+  assignReceiptId = null;
+}
+
+async function saveAssignment() {
+  var jobId = document.getElementById('assign-job-select').value;
+  var poNumber = document.getElementById('assign-po-input').value.trim();
+  if (!jobId && !poNumber) { document.getElementById('assign-error').style.display = 'block'; return; }
+  document.getElementById('assign-error').style.display = 'none';
+  var btn = document.querySelector('#assign-modal .btn-primary');
+  btn.disabled = true;
+  try {
+    var updates = {};
+    if (jobId) {
+      var job = jobs.find(function(j){ return j.id === jobId; });
+      updates.job_id = jobId;
+      updates.job_number = job ? (job.job_number || null) : null;
+    }
+    if (poNumber) updates.po_number = poNumber;
+    var updated = await apiCall('PUT', '/receipts/' + assignReceiptId, updates);
+    var r = receipts.find(function(x){ return x.id === assignReceiptId; });
+    if (r) Object.assign(r, updated);
+    closeAssignModal();
+    renderDocs(); updateDashboard(); updateInsights();
+    showToast('Receipt assigned');
+  } catch(err) { showToast('Failed: ' + err.message, 'error'); }
+  btn.disabled = false;
+}
+
+// ── Insights ──
+function updateInsights() {
+  if (currentInsTab === 'overview') renderInsightsOverview();
+  else if (currentInsTab === 'byjob') renderInsByJob();
+  else renderInsByPO();
+}
+
+function renderInsightsOverview() {
+  var months = getLast6Months();
+  var now = new Date();
+  var curM = now.getMonth(), curY = now.getFullYear();
+  var lastM = curM === 0 ? 11 : curM - 1;
+  var lastY = curM === 0 ? curY - 1 : curY;
+
+  var thisMonthR = receipts.filter(function(r){ if(!r.date)return false; var d=new Date(r.date+'T00:00:00'); return d.getMonth()===curM&&d.getFullYear()===curY; });
+  var lastMonthR = receipts.filter(function(r){ if(!r.date)return false; var d=new Date(r.date+'T00:00:00'); return d.getMonth()===lastM&&d.getFullYear()===lastY; });
+
+  var thisTotal = thisMonthR.reduce(function(s,r){ return s+(parseFloat(r.amount)||0); }, 0);
+  var lastTotal = lastMonthR.reduce(function(s,r){ return s+(parseFloat(r.amount)||0); }, 0);
+  var thisGst = thisMonthR.reduce(function(s,r){ return s+(parseFloat(r.gst)||0); }, 0);
+  var totalTax = receipts.reduce(function(s,r){ return s+taxAmt(r); }, 0);
+  var grandTotal = receipts.reduce(function(s,r){ return s+(parseFloat(r.amount)||0); }, 0);
+
+  document.getElementById('ins-this').textContent = fmt(thisTotal);
+  var trend = lastTotal ? ((thisTotal - lastTotal) / lastTotal * 100) : 0;
+  document.getElementById('ins-this-sub').textContent = lastTotal ? (trend >= 0 ? '+' : '') + trend.toFixed(1) + '% vs last month' : 'No prior data';
+  document.getElementById('ins-last').textContent = fmt(lastTotal);
+  document.getElementById('ins-last-sub').textContent = lastMonthR.length + ' receipt' + (lastMonthR.length!==1?'s':'');
+  document.getElementById('ins-gst').textContent = fmt(thisGst);
+  document.getElementById('ins-totaltax').textContent = fmt(totalTax);
+  document.getElementById('ins-writeoff').textContent = fmt(totalTax);
+  document.getElementById('ins-avg').textContent = fmt(grandTotal / 6);
+
+  // Trend indicator
+  var trendEl = document.getElementById('ins-trend');
+  if (!lastTotal) { trendEl.textContent = '—'; trendEl.style.color='var(--text3)'; }
+  else if (thisTotal <= lastTotal) { trendEl.innerHTML='<i class="ti ti-arrow-down-right"></i> Down'; trendEl.style.color='var(--green)'; }
+  else { trendEl.innerHTML='<i class="ti ti-arrow-up-right"></i> Up'; trendEl.style.color='var(--red)'; }
+
+  // Categories
+  if (receipts.length) {
+    var colors = ['var(--accent)','var(--blue)','var(--purple)','var(--amber)'];
+    var cc = {}; receipts.forEach(function(r){ var c=r.category||'uncategorized'; cc[c]=(cc[c]||0)+(parseFloat(r.amount)||0); });
+    var tc = Object.entries(cc).sort(function(a,b){ return b[1]-a[1]; });
+    var maxC = tc[0]?tc[0][1]:1;
+    document.getElementById('ins-bigcat').textContent = tc[0] ? tc[0][0] : 'None yet';
+    document.getElementById('ins-cats').innerHTML = tc.map(function(c,i){
+      return '<div class="cat-row"><div class="cat-dot" style="background:'+colors[Math.min(i,3)]+'"></div><div style="font-size:12px;flex:1">'+c[0]+'</div><div class="cat-bar-wrap"><div class="cat-bar" style="width:'+(c[1]/maxC*100).toFixed(1)+'%;background:'+colors[Math.min(i,3)]+'"></div></div><div style="font-size:12px;font-weight:600;font-family:Syne,sans-serif;min-width:54px;text-align:right">$'+c[1].toFixed(2)+'</div></div>';
+    }).join('');
+
+    var vc = {}; receipts.forEach(function(r){ var v=r.vendor||'Unknown'; vc[v]=(vc[v]||0)+(parseFloat(r.amount)||0); });
+    var tv = Object.entries(vc).sort(function(a,b){ return b[1]-a[1]; }).slice(0,3);
+    var bgc = ['var(--accent-light)','var(--blue-bg)','var(--purple-bg)'];
+    document.getElementById('ins-vendors').innerHTML = tv.map(function(v,i){
+      return '<div class="vendor-rank"><div class="rank-num" style="background:'+bgc[i]+';color:'+colors[i]+'">'+(i+1)+'</div><div style="flex:1;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(v[0])+'</div><div style="font-family:Syne,sans-serif;font-size:12px;font-weight:600;flex-shrink:0;margin-left:8px">$'+v[1].toFixed(2)+'</div></div>';
+    }).join('');
+  }
+
+  buildMonthlyBars('ins-monthly-chart', true);
+  selectMonthByIdx(selectedMonthIdx);
+}
+
+function selectMonthByIdx(idx) {
+  selectedMonthIdx = idx;
+  document.querySelectorAll('[id^="ibar-"]').forEach(function(b,i){ b.classList.toggle('active', parseInt(b.id.replace('ibar-',''))===idx); });
+  var months = getLast6Months();
+  var m = months[idx];
+  if (!m) return;
+  document.getElementById('spending-detail-title').textContent = m.label + ' ' + m.year;
+  renderDailyChart(m);
+}
+
+function renderDailyChart(m) {
+  var mr = receipts.filter(function(r){
+    if (!r.date) return false;
+    var d = new Date(r.date + 'T00:00:00');
+    return d.getFullYear() === m.year && d.getMonth() === m.month;
+  });
+
+  var wrapEl = document.getElementById('daily-chart-wrap');
+  var detailEl = document.getElementById('spending-detail-content');
+
+  if (!mr.length) {
+    if (wrapEl) wrapEl.style.display = 'none';
+    if (detailEl) detailEl.textContent = 'No spending recorded this month';
+    return;
+  }
+
+  var totalSpend = mr.reduce(function(s,r){ return s+(parseFloat(r.amount)||0); }, 0);
+  var totalTax = mr.reduce(function(s,r){ return s+taxAmt(r); }, 0);
+  if (detailEl) detailEl.innerHTML = '<span style="color:var(--text2)">' + mr.length + ' receipt' + (mr.length!==1?'s':'') + '</span>' +
+    '<span style="font-weight:600;font-family:Syne,sans-serif;margin-left:8px">$' + totalSpend.toFixed(2) + '</span>' +
+    (totalTax ? '<span style="color:var(--accent);margin-left:6px">+$' + totalTax.toFixed(2) + ' tax</span>' : '');
+
+  var daysInMonth = new Date(m.year, m.month + 1, 0).getDate();
+  var dayTotals = {};
+  mr.forEach(function(r){ var d=new Date(r.date+'T00:00:00').getDate(); dayTotals[d]=(dayTotals[d]||0)+(parseFloat(r.amount)||0); });
+  var vals = [];
+  for (var day = 1; day <= daysInMonth; day++) vals.push({ day: day, val: dayTotals[day] || 0 });
+  var maxV = Math.max.apply(null, vals.map(function(v){ return v.val; }).concat([1]));
+  var W=440, H=96, pX=10, pY=8, labelH=14, chartH=H-pY-labelH;
+  var chartW = W-2*pX;
+  var pts = vals.map(function(v){
+    return { day:v.day, val:v.val, x:(pX + (v.day-1)/(daysInMonth-1)*chartW).toFixed(1), y:(pY+chartH-(v.val/maxV*chartH)).toFixed(1) };
+  });
+  var pathD = pts.map(function(p,i){ return (i===0?'M':'L')+p.x+','+p.y; }).join(' ');
+  var areaD = pathD + ' L'+pts[pts.length-1].x+','+(H-labelH)+' L'+pts[0].x+','+(H-labelH)+' Z';
+  var dots = pts.filter(function(p){ return p.val>0; }).map(function(p){
+    return '<circle class="chart-dot" cx="'+p.x+'" cy="'+p.y+'" r="3" fill="var(--accent)" stroke="white" stroke-width="1.5"><title>'+m.label+' '+p.day+': $'+p.val.toFixed(2)+'</title></circle>';
+  }).join('');
+  var labelDays = buildLabelDays(daysInMonth);
+  var xLabels = labelDays.map(function(day){
+    var xPos = (pX+(day-1)/(daysInMonth-1)*chartW).toFixed(1);
+    return '<text x="'+xPos+'" y="'+(H-2)+'" font-size="8" fill="#aaaaaa" text-anchor="middle">'+day+'</text>';
+  }).join('');
+  var gid = nextGradId();
+  var svg = '<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">' +
+    '<defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0D7A6B" stop-opacity="0.18"/><stop offset="100%" stop-color="#0D7A6B" stop-opacity="0"/></linearGradient></defs>' +
+    '<path d="'+areaD+'" fill="url(#'+gid+')"/>' +
+    '<path d="'+pathD+'" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+    dots + xLabels + '</svg>';
+  if (wrapEl) { wrapEl.innerHTML = svg; wrapEl.style.display = 'block'; }
+}
+
+// ── Chart helpers ──
+function buildLabelDays(daysInMonth) {
+  var out = [1];
+  for (var d = 5; d < daysInMonth; d += 5) out.push(d);
+  if (out[out.length-1] !== daysInMonth) out.push(daysInMonth);
+  return out;
+}
+
+function renderDailyChartFiltered(m, filteredReceipts, dailyWrapId, contentId) {
+  var mr = filteredReceipts.filter(function(r){
+    if (!r.date) return false;
+    var d = new Date(r.date+'T00:00:00');
+    return d.getFullYear()===m.year && d.getMonth()===m.month;
+  });
+  var wrapEl = document.getElementById(dailyWrapId);
+  var detailEl = document.getElementById(contentId);
+  if (!mr.length) {
+    if (wrapEl) wrapEl.style.display='none';
+    if (detailEl) detailEl.textContent='No spending recorded this month';
+    return;
+  }
+  var totalSpend = mr.reduce(function(s,r){ return s+(parseFloat(r.amount)||0); },0);
+  var totalTax = mr.reduce(function(s,r){ return s+taxAmt(r); },0);
+  if (detailEl) detailEl.innerHTML = '<span style="color:var(--text2)">'+mr.length+' receipt'+(mr.length!==1?'s':'')+'</span><span style="font-weight:600;font-family:Syne,sans-serif;margin-left:8px">$'+totalSpend.toFixed(2)+'</span>'+(totalTax?'<span style="color:var(--accent);margin-left:6px">+$'+totalTax.toFixed(2)+' tax</span>':'');
+  var daysInMonth = new Date(m.year, m.month+1, 0).getDate();
+  var dayTotals = {};
+  mr.forEach(function(r){ var d=new Date(r.date+'T00:00:00').getDate(); dayTotals[d]=(dayTotals[d]||0)+(parseFloat(r.amount)||0); });
+  var vals = [];
+  for (var day=1; day<=daysInMonth; day++) vals.push({day:day,val:dayTotals[day]||0});
+  var maxV = Math.max.apply(null, vals.map(function(v){ return v.val; }).concat([1]));
+  var W=440, H=96, pX=10, pY=8, labelH=14, chartH=H-pY-labelH, chartW=W-2*pX;
+  var pts = vals.map(function(v){
+    return {day:v.day,val:v.val,x:(pX+(v.day-1)/(daysInMonth-1)*chartW).toFixed(1),y:(pY+chartH-(v.val/maxV*chartH)).toFixed(1)};
+  });
+  var pathD = pts.map(function(p,i){ return (i===0?'M':'L')+p.x+','+p.y; }).join(' ');
+  var areaD = pathD+' L'+pts[pts.length-1].x+','+(H-labelH)+' L'+pts[0].x+','+(H-labelH)+' Z';
+  var dots = pts.filter(function(p){ return p.val>0; }).map(function(p){
+    return '<circle class="chart-dot" cx="'+p.x+'" cy="'+p.y+'" r="3" fill="var(--accent)" stroke="white" stroke-width="1.5"><title>'+m.label+' '+p.day+': $'+p.val.toFixed(2)+'</title></circle>';
+  }).join('');
+  var xLabels = buildLabelDays(daysInMonth).map(function(day){
+    var xPos=(pX+(day-1)/(daysInMonth-1)*chartW).toFixed(1);
+    return '<text x="'+xPos+'" y="'+(H-2)+'" font-size="8" fill="#aaaaaa" text-anchor="middle">'+day+'</text>';
+  }).join('');
+  var gid = nextGradId();
+  var svg = '<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">' +
+    '<defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0D7A6B" stop-opacity="0.18"/><stop offset="100%" stop-color="#0D7A6B" stop-opacity="0"/></linearGradient></defs>' +
+    '<path d="'+areaD+'" fill="url(#'+gid+')"/>' +
+    '<path d="'+pathD+'" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>'+dots+xLabels+'</svg>';
+  if (wrapEl) { wrapEl.innerHTML=svg; wrapEl.style.display='block'; }
+}
+
+function buildDetailMonthlyBars(containerId, filteredReceipts, type, id) {
+  var months = getLast6Months();
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  var totals = months.map(function(m){
+    return filteredReceipts.filter(function(r){
+      if (!r.date) return false;
+      var d=new Date(r.date+'T00:00:00');
+      return d.getFullYear()===m.year && d.getMonth()===m.month;
+    }).reduce(function(s,r){ return s+(parseFloat(r.amount)||0); },0);
+  });
+  var maxVal = Math.max.apply(null, totals.concat([1]));
+  var safeId = String(id).replace(/'/g,"\\'");
+  el.innerHTML = months.map(function(m,i){
+    var pct = Math.max(totals[i]/maxVal*100, 2).toFixed(1);
+    var clickFn = 'selectDetailMonthByIdx('+i+',\''+type+'\',\''+safeId+'\')';
+    return '<div class="bar-wrap" onclick="'+clickFn+'"><div class="bar-inner"><div class="bar" id="dbar-'+i+'" style="height:'+pct+'%"></div></div><div class="bar-label">'+m.label+'</div></div>';
+  }).join('');
+}
+
+function selectDetailMonthByIdx(idx, type, id) {
+  for (var i=0; i<6; i++) { var b=document.getElementById('dbar-'+i); if(b) b.classList.toggle('active',i===idx); }
+  var months = getLast6Months();
+  var m = months[idx];
+  if (!m) return;
+  var filteredReceipts = type==='job'
+    ? receipts.filter(function(r){ return r.job_id===id; })
+    : receipts.filter(function(r){ return r.po_number && r.po_number.trim()===id.trim(); });
+  var titleId = type==='job' ? 'ins-job-spending-title' : 'ins-po-spending-title';
+  var contentId = type==='job' ? 'ins-job-spending-content' : 'ins-po-spending-content';
+  var dailyId = type==='job' ? 'ins-job-daily-chart' : 'ins-po-daily-chart';
+  var titleEl = document.getElementById(titleId);
+  if (titleEl) titleEl.textContent = m.label+' '+m.year;
+  renderDailyChartFiltered(m, filteredReceipts, dailyId, contentId);
+}
+
+function renderDetailCats(containerId, filteredReceipts) {
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  if (!filteredReceipts.length) { el.innerHTML='<div style="font-size:12px;color:var(--text3);text-align:center;padding:12px 0">No data</div>'; return; }
+  var colors=['var(--accent)','var(--blue)','var(--purple)','var(--amber)'];
+  var cc={}; filteredReceipts.forEach(function(r){ var c=r.category||'uncategorized'; cc[c]=(cc[c]||0)+(parseFloat(r.amount)||0); });
+  var tc=Object.entries(cc).sort(function(a,b){ return b[1]-a[1]; });
+  var maxC=tc[0]?tc[0][1]:1;
+  el.innerHTML=tc.map(function(c,i){
+    return '<div class="cat-row"><div class="cat-dot" style="background:'+colors[Math.min(i,3)]+'"></div><div style="font-size:12px;flex:1">'+c[0]+'</div><div class="cat-bar-wrap"><div class="cat-bar" style="width:'+(c[1]/maxC*100).toFixed(1)+'%;background:'+colors[Math.min(i,3)]+'"></div></div><div style="font-size:12px;font-weight:600;font-family:Syne,sans-serif;min-width:54px;text-align:right">$'+c[1].toFixed(2)+'</div></div>';
+  }).join('');
+}
+
+function renderDetailReceipts(containerId, filteredReceipts) {
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  if (!filteredReceipts.length) { el.innerHTML='<div style="font-size:12px;color:var(--text3);text-align:center;padding:12px 0">No receipts</div>'; return; }
+  var sorted = filteredReceipts.slice().sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+  el.innerHTML = sorted.slice(0,8).map(renderMiniRow).join('') + (sorted.length>8?'<div style="font-size:11px;color:var(--text3);text-align:center;margin-top:4px">+' + (sorted.length-8)+' more</div>':'');
+}
+
+// ── Insights drill-down — By Job ──
+function showInsJobDetail(jobId) {
+  insJobDetailId = jobId;
+  var job = jobs.find(function(j){ return j.id===jobId; });
+  if (!job) return;
+  var jR = receipts.filter(function(r){ return r.job_id===jobId; });
+  document.getElementById('ins-byjob-list-view').style.display='none';
+  var detailEl = document.getElementById('ins-byjob-detail-view');
+  detailEl.style.display='block';
+  var spend = jR.reduce(function(s,r){ return s+(parseFloat(r.amount)||0); },0);
+  var gstT = jR.reduce(function(s,r){ return s+(parseFloat(r.gst)||0); },0);
+  var hstT = jR.reduce(function(s,r){ return s+(parseFloat(r.hst)||0); },0);
+  var budgetSection = '';
+  if (job.budget) {
+    var pct=Math.min(spend/job.budget*100,100).toFixed(1), over=spend>job.budget;
+    budgetSection='<div class="budget-row" style="margin-top:0;margin-bottom:3px"><span>'+fmt(spend)+' spent</span><span>Budget: '+fmt(job.budget)+'</span></div><div class="budget-bar-wrap" style="margin-bottom:14px"><div class="budget-bar-fill'+(over?' over':'')+'" style="width:'+pct+'%"></div></div>';
+  }
+  var jobPOs = [...new Set(jR.map(function(r){ return r.po_number; }).filter(Boolean))];
+  var poLine = jobPOs.length ? '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px">'+jobPOs.map(function(po){ return '<span class="tag tag-po">'+esc(po)+'</span>'; }).join('')+'</div>' : '';
+  detailEl.innerHTML =
+    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">' +
+    '<button class="btn btn-ghost btn-sm" onclick="backToInsJobList()"><i class="ti ti-arrow-left"></i> All Jobs</button>' +
+    '<div style="flex:1"><div style="font-family:Syne,sans-serif;font-size:16px;font-weight:700">'+esc(job.name)+(job.job_number?'<span class="tag tag-job" style="margin-left:8px;font-size:11px">'+esc(job.job_number)+'</span>':'')+'</div>' +
+    (job.start_date?'<div style="font-size:11px;color:var(--text3);margin-top:2px">Started: '+job.start_date+'</div>':'')+poLine+'</div></div>'+
+    '<div class="stats-grid" style="margin-bottom:14px">' +
+    '<div class="stat-card accent-card"><div class="stat-label">Total Spend</div><div class="stat-value accent">'+fmt(spend)+'</div><div class="stat-sub">'+jR.length+' receipts</div></div>' +
+    '<div class="stat-card"><div class="stat-label">Receipts</div><div class="stat-value">'+jR.length+'</div><div class="stat-sub">on this job</div></div>' +
+    '<div class="stat-card"><div class="stat-label">GST</div><div class="stat-value accent">'+fmt(gstT)+'</div><div class="stat-sub">write-off</div></div>' +
+    '<div class="stat-card green-card"><div class="stat-label">HST</div><div class="stat-value green">'+fmt(hstT)+'</div><div class="stat-sub">write-off</div></div>' +
+    '</div>'+budgetSection+
+    '<div class="card" style="margin-bottom:14px"><div class="card-title">Monthly Spending — click a bar</div>' +
+    '<div class="chart-area" id="ins-job-monthly-chart"></div>' +
+    '<div class="spending-detail"><div style="font-size:12px;font-weight:500;color:var(--text);margin-bottom:8px" id="ins-job-spending-title">—</div>' +
+    '<div class="daily-chart-wrap" id="ins-job-daily-chart" style="display:none"></div>' +
+    '<div id="ins-job-spending-content" style="font-size:12px;color:var(--text3)">Click a bar to see daily breakdown</div></div></div>'+
+    '<div class="grid-2"><div class="card"><div class="card-title">Top Categories</div><div id="ins-job-cats"></div></div>' +
+    '<div class="card"><div class="card-title">Receipts</div><div id="ins-job-receipts"></div></div></div>';
+  buildDetailMonthlyBars('ins-job-monthly-chart', jR, 'job', jobId);
+  renderDetailCats('ins-job-cats', jR);
+  renderDetailReceipts('ins-job-receipts', jR);
+}
+
+function backToInsJobList() {
+  insJobDetailId = null;
+  document.getElementById('ins-byjob-list-view').style.display='block';
+  document.getElementById('ins-byjob-detail-view').style.display='none';
+}
+
+// ── Insights drill-down — By PO ──
+function showInsPODetail(po) {
+  insPODetailId = po;
+  var recs = receipts.filter(function(r){ return r.po_number && r.po_number.trim()===po.trim(); });
+  document.getElementById('ins-bypo-list-view').style.display='none';
+  var detailEl = document.getElementById('ins-bypo-detail-view');
+  detailEl.style.display='block';
+  var spend = recs.reduce(function(s,r){ return s+(parseFloat(r.amount)||0); },0);
+  var gstT = recs.reduce(function(s,r){ return s+(parseFloat(r.gst)||0); },0);
+  var hstT = recs.reduce(function(s,r){ return s+(parseFloat(r.hst)||0); },0);
+  var linkedJobIds = [...new Set(recs.map(function(r){ return r.job_id; }).filter(Boolean))];
+  var linkedJobs = linkedJobIds.map(function(id){ return jobs.find(function(j){ return j.id===id; }); }).filter(Boolean);
+  var jobLine = linkedJobs.length ? '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px"><span style="font-size:10px;color:var(--text3);align-self:center">Linked jobs:</span>'+linkedJobs.map(function(j){ return '<span class="tag tag-job">'+esc(j.name)+'</span>'; }).join('')+'</div>' : '';
+  detailEl.innerHTML =
+    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">' +
+    '<button class="btn btn-ghost btn-sm" onclick="backToInsPOList()"><i class="ti ti-arrow-left"></i> All POs</button>' +
+    '<div style="flex:1"><div style="font-family:Syne,sans-serif;font-size:16px;font-weight:700">'+esc(po)+'</div>'+jobLine+'</div></div>'+
+    '<div class="stats-grid" style="margin-bottom:14px">' +
+    '<div class="stat-card purple-card"><div class="stat-label">Total Spend</div><div class="stat-value purple">'+fmt(spend)+'</div><div class="stat-sub">'+recs.length+' receipts</div></div>' +
+    '<div class="stat-card"><div class="stat-label">Receipts</div><div class="stat-value">'+recs.length+'</div><div class="stat-sub">on this PO</div></div>' +
+    '<div class="stat-card"><div class="stat-label">GST</div><div class="stat-value accent">'+fmt(gstT)+'</div><div class="stat-sub">write-off</div></div>' +
+    '<div class="stat-card green-card"><div class="stat-label">HST</div><div class="stat-value green">'+fmt(hstT)+'</div><div class="stat-sub">write-off</div></div>' +
+    '</div>'+
+    '<div class="card" style="margin-bottom:14px"><div class="card-title">Monthly Spending — click a bar</div>' +
+    '<div class="chart-area" id="ins-po-monthly-chart"></div>' +
+    '<div class="spending-detail"><div style="font-size:12px;font-weight:500;color:var(--text);margin-bottom:8px" id="ins-po-spending-title">—</div>' +
+    '<div class="daily-chart-wrap" id="ins-po-daily-chart" style="display:none"></div>' +
+    '<div id="ins-po-spending-content" style="font-size:12px;color:var(--text3)">Click a bar to see daily breakdown</div></div></div>'+
+    '<div class="grid-2"><div class="card"><div class="card-title">Top Categories</div><div id="ins-po-cats"></div></div>' +
+    '<div class="card"><div class="card-title">Receipts</div><div id="ins-po-receipts"></div></div></div>';
+  buildDetailMonthlyBars('ins-po-monthly-chart', recs, 'po', po);
+  renderDetailCats('ins-po-cats', recs);
+  renderDetailReceipts('ins-po-receipts', recs);
+}
+
+function backToInsPOList() {
+  insPODetailId = null;
+  document.getElementById('ins-bypo-list-view').style.display='block';
+  document.getElementById('ins-bypo-detail-view').style.display='none';
+}
+
+// ── Insights By Job ──
+function renderInsByJob() {
+  insJobDetailId = null;
+  document.getElementById('ins-byjob-list-view').style.display='block';
+  document.getElementById('ins-byjob-detail-view').style.display='none';
+  var jobsWithR = jobs.filter(function(j){ return receipts.some(function(r){ return r.job_id===j.id; }); });
+  var totalSpend = jobsWithR.reduce(function(s,j){ return s+receipts.filter(function(r){ return r.job_id===j.id; }).reduce(function(a,r){ return a+(parseFloat(r.amount)||0); },0); }, 0);
+  var totalTax = jobsWithR.reduce(function(s,j){ return s+receipts.filter(function(r){ return r.job_id===j.id; }).reduce(function(a,r){ return a+taxAmt(r); },0); }, 0);
+  document.getElementById('insjob-count').textContent = jobsWithR.length;
+  document.getElementById('insjob-spend').textContent = fmt(totalSpend);
+  document.getElementById('insjob-avg').textContent = fmt(jobsWithR.length ? totalSpend/jobsWithR.length : 0);
+  document.getElementById('insjob-tax').textContent = fmt(totalTax);
+  var listEl = document.getElementById('ins-jobs-list');
+  if (!jobsWithR.length) { listEl.innerHTML = '<div class="empty-state"><i class="ti ti-briefcase-off"></i><p>No jobs with receipts yet.</p></div>'; return; }
+  listEl.innerHTML = jobsWithR.map(function(j) {
+    var jR = receipts.filter(function(r){ return r.job_id===j.id; });
+    var spend = jR.reduce(function(s,r){ return s+(parseFloat(r.amount)||0); },0);
+    var gstT = jR.reduce(function(s,r){ return s+(parseFloat(r.gst)||0); },0);
+    var hstT = jR.reduce(function(s,r){ return s+(parseFloat(r.hst)||0); },0);
+    var budgetPct = j.budget ? Math.min(spend/j.budget*100,100).toFixed(0)+'%' : null;
+    return '<div class="ins-group-card" style="cursor:pointer" onclick="showInsJobDetail(\''+j.id+'\')">' +
+      '<div class="ins-group-header">' +
+      '<div style="width:28px;height:28px;background:var(--accent-light);border-radius:7px;display:flex;align-items:center;justify-content:center;border:1px solid var(--accent-mid);flex-shrink:0"><i class="ti ti-briefcase" style="color:var(--accent);font-size:14px"></i></div>' +
+      '<div style="flex:1;min-width:0"><div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700">'+esc(j.name)+(j.job_number?'<span class="tag tag-job" style="margin-left:6px;font-size:10px">'+esc(j.job_number)+'</span>':'')+'</div>' +
+      '<div style="font-size:11px;color:var(--text3)">'+jR.length+' receipt'+(jR.length!==1?'s':'')+' · GST: '+fmt(gstT)+' · HST: '+fmt(hstT)+(budgetPct?' · '+budgetPct+' of budget':'')+'</div></div>' +
+      '<div style="font-family:Syne,sans-serif;font-size:15px;font-weight:700;color:var(--accent);margin-right:4px">'+fmt(spend)+'</div>' +
+      '<i class="ti ti-chevron-right" style="color:var(--text3);font-size:15px"></i></div></div>';
+  }).join('');
+}
+
+// ── Insights By PO ──
+function renderInsByPO() {
+  insPODetailId = null;
+  document.getElementById('ins-bypo-list-view').style.display='block';
+  document.getElementById('ins-bypo-detail-view').style.display='none';
+  var grouped = {};
+  receipts.forEach(function(r){ if(r.po_number&&r.po_number.trim()){ var k=r.po_number.trim(); if(!grouped[k])grouped[k]=[]; grouped[k].push(r); } });
+  var pos = Object.keys(grouped).sort();
+  var totalSpend = pos.reduce(function(s,po){ return s+grouped[po].reduce(function(a,r){ return a+(parseFloat(r.amount)||0); },0); },0);
+  var totalTax = pos.reduce(function(s,po){ return s+grouped[po].reduce(function(a,r){ return a+taxAmt(r); },0); },0);
+  document.getElementById('inspo-count').textContent = pos.length;
+  document.getElementById('inspo-spend').textContent = fmt(totalSpend);
+  document.getElementById('inspo-avg').textContent = fmt(pos.length ? totalSpend/pos.length : 0);
+  document.getElementById('inspo-tax').textContent = fmt(totalTax);
+  var listEl = document.getElementById('ins-po-list');
+  if (!pos.length) { listEl.innerHTML = '<div class="empty-state"><i class="ti ti-tag-off"></i><p>No PO numbers found.</p></div>'; return; }
+  listEl.innerHTML = pos.map(function(po) {
+    var recs = grouped[po];
+    var spend = recs.reduce(function(s,r){ return s+(parseFloat(r.amount)||0); },0);
+    var gstT = recs.reduce(function(s,r){ return s+(parseFloat(r.gst)||0); },0);
+    var hstT = recs.reduce(function(s,r){ return s+(parseFloat(r.hst)||0); },0);
+    var linkedJobIds = [...new Set(recs.map(function(r){ return r.job_id; }).filter(Boolean))];
+    var linkedJobs = linkedJobIds.map(function(id){ return jobs.find(function(j){ return j.id===id; }); }).filter(Boolean);
+    var jobSub = linkedJobs.length ? ' · Jobs: '+linkedJobs.map(function(j){ return j.name; }).join(', ') : '';
+    return '<div class="ins-group-card" style="cursor:pointer" onclick="showInsPODetail(\''+esc(po)+'\')">' +
+      '<div class="ins-group-header">' +
+      '<div style="width:28px;height:28px;background:var(--purple-bg);border-radius:7px;display:flex;align-items:center;justify-content:center;border:1px solid #C9C6F5;flex-shrink:0"><i class="ti ti-tag" style="color:var(--purple);font-size:14px"></i></div>' +
+      '<div style="flex:1;min-width:0"><div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700">'+esc(po)+'</div>' +
+      '<div style="font-size:11px;color:var(--text3)">'+recs.length+' receipt'+(recs.length!==1?'s':'')+' · GST: '+fmt(gstT)+' · HST: '+fmt(hstT)+esc(jobSub)+'</div></div>' +
+      '<div style="font-family:Syne,sans-serif;font-size:15px;font-weight:700;color:var(--purple);margin-right:4px">'+fmt(spend)+'</div>' +
+      '<i class="ti ti-chevron-right" style="color:var(--text3);font-size:15px"></i></div></div>';
+  }).join('');
+}
+
+// ── Upload Modal ──
+function openUpload() {
+  populateJobSelect();
+  document.getElementById('upload-modal').classList.add('open');
+}
+function closeUpload() { document.getElementById('upload-modal').classList.remove('open'); resetForm(); }
+
+function populateJobSelect() {
+  var sel = document.getElementById('u-job-link');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">No job selected</option>' + jobs.map(function(j){
+    return '<option value="' + j.id + '">' + esc(j.name) + (j.job_number ? ' (' + esc(j.job_number) + ')' : '') + '</option>';
+  }).join('');
+}
+
+function onJobLinkChange() {
+  var jobId = document.getElementById('u-job-link').value;
+  if (jobId) {
+    var job = jobs.find(function(j){ return j.id === jobId; });
+    if (job && job.job_number) document.getElementById('u-job').value = job.job_number;
+  }
+}
+
+function resetForm() {
+  ['u-vendor','u-amount','u-gst','u-hst','u-job','u-po','u-card','u-ref'].forEach(function(id){ var e=document.getElementById(id); if(e) e.value=''; });
+  document.getElementById('u-date').value = '';
+  document.getElementById('u-category').value = '';
+  document.getElementById('u-job-link').value = '';
+  document.getElementById('file-name').textContent = '';
+  document.getElementById('file-name').style.color = 'var(--accent)';
+  document.getElementById('ai-thinking').style.display = 'none';
+  document.getElementById('ai-error').style.display = 'none';
+  document.getElementById('autofill-btn').disabled = false;
+  document.getElementById('upload-preview').style.display = 'none';
+  document.getElementById('upload-preview').innerHTML = '';
+  document.getElementById('file-input').value = '';
+  currentFileData = null; currentFileName = null; currentFileType = null;
+}
+
+function fileSelected(input) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  currentFileName = file.name; currentFileType = file.type;
+  document.getElementById('file-name').textContent = file.name;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    currentFileData = e.target.result;
+    var prev = document.getElementById('upload-preview');
+    if (file.type.startsWith('image/')) {
+      prev.innerHTML = '<div style="border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border);max-height:120px;display:flex;align-items:center;justify-content:center;background:var(--bg3)"><img src="' + currentFileData + '" style="max-width:100%;max-height:120px;object-fit:contain;display:block" /></div>';
+      prev.style.display = 'block';
+    } else if (file.type === 'application/pdf') {
+      prev.innerHTML = '<div class="pdf-preview"><div class="pdf-icon"><i class="ti ti-file-type-pdf"></i></div><div><div style="font-size:13px;font-weight:500;color:var(--red)">' + esc(file.name) + '</div><div style="font-size:11px;color:var(--text3);margin-top:2px">PDF ready — click Autofill to extract data</div></div></div>';
+      prev.style.display = 'block';
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+async function runAutofill() {
+  if (!currentFileData) {
+    document.getElementById('file-name').textContent = 'Please attach a receipt first.';
+    document.getElementById('file-name').style.color = 'var(--red)';
+    setTimeout(function(){ document.getElementById('file-name').style.color='var(--accent)'; if(!currentFileName) document.getElementById('file-name').textContent=''; }, 2000);
+    return;
+  }
+  var thinking = document.getElementById('ai-thinking');
+  var errEl = document.getElementById('ai-error');
+  thinking.style.display = 'flex'; errEl.style.display = 'none';
+  document.getElementById('autofill-btn').disabled = true;
+  try {
+    var base64 = currentFileData.split(',')[1];
+    var parsed = await apiCall('POST', '/api/parse-receipt', { fileData: base64, fileType: currentFileType, fileName: currentFileName });
+    if (parsed.vendor) document.getElementById('u-vendor').value = parsed.vendor;
+    if (parsed.amount) document.getElementById('u-amount').value = parseFloat(parsed.amount) || '';
+    if (parsed.date) document.getElementById('u-date').value = parsed.date;
+    if (parsed.gst != null) document.getElementById('u-gst').value = parseFloat(parsed.gst) || '';
+    if (parsed.hst != null) document.getElementById('u-hst').value = parseFloat(parsed.hst) || '';
+    if (parsed.notes) document.getElementById('u-ref').value = parsed.notes;
+  } catch(err) {
+    errEl.textContent = 'Could not read receipt: ' + (err.message || 'Unknown error') + '. Please fill in manually.';
+    errEl.style.display = 'block';
+  }
+  thinking.style.display = 'none';
+  document.getElementById('autofill-btn').disabled = false;
+}
+
+async function saveReceipt() {
+  var vendor = document.getElementById('u-vendor').value.trim();
+  if (!vendor) { alert('Please enter a vendor name.'); return; }
+  var btn = document.querySelector('#upload-modal .modal-actions .btn-primary');
+  btn.disabled = true; btn.textContent = 'Saving...';
+  try {
+    var fd = new FormData();
+    if (currentFileData && currentFileName) fd.append('file', dataURLtoBlob(currentFileData), currentFileName);
+    fd.append('vendor', vendor);
+    var amount = document.getElementById('u-amount').value;
+    var gst = document.getElementById('u-gst').value;
+    var hst = document.getElementById('u-hst').value;
+    var date = document.getElementById('u-date').value || new Date().toISOString().split('T')[0];
+    var category = document.getElementById('u-category').value;
+    var reference = document.getElementById('u-ref').value.trim();
+    var job = document.getElementById('u-job').value.trim();
+    var po = document.getElementById('u-po').value.trim();
+    var card = document.getElementById('u-card').value.trim();
+    var jobId = document.getElementById('u-job-link').value;
+    if (amount) fd.append('amount', amount);
+    if (gst) fd.append('gst', gst);
+    if (hst) fd.append('hst', hst);
+    fd.append('date', date);
+    if (category) fd.append('category', category);
+    if (reference) fd.append('reference', reference);
+    if (job) fd.append('job_number', job);
+    if (po) fd.append('po_number', po);
+    if (card) fd.append('card', card);
+    if (jobId) fd.append('job_id', jobId);
+    var receipt = await apiCall('POST', '/receipts/upload', fd, true);
+    receipts.unshift(receipt);
+    closeUpload();
+    updateDashboard(); renderDocs(); updateInsights(); renderExport();
+    showToast('Receipt saved');
+  } catch(err) { showToast('Failed to save: ' + err.message, 'error'); }
+  btn.disabled = false; btn.innerHTML = '<i class="ti ti-check"></i> Save Receipt';
+}
+
+// ── View / Edit Modal ──
+function openReceiptView(id) {
+  var r = receipts.find(function(x){ return x.id === id; }); if (!r) return;
+  viewingId = id;
+  var amt = parseFloat(r.amount)||0;
+  document.getElementById('vm-title').textContent = r.vendor || 'Receipt';
+  document.getElementById('vm-sub').textContent = r.date || '';
+  document.getElementById('vm-amount').textContent = '$' + amt.toFixed(2);
+  document.getElementById('vm-date').textContent = r.date || '—';
+  document.getElementById('vm-gst').textContent = '$' + (parseFloat(r.gst)||0).toFixed(2);
+  document.getElementById('vm-hst').textContent = '$' + (parseFloat(r.hst)||0).toFixed(2);
+  document.getElementById('vm-job').textContent = r.job_number || '—';
+  document.getElementById('vm-po').textContent = r.po_number || '—';
+  document.getElementById('vm-card').textContent = r.card || '—';
+  document.getElementById('vm-cat').textContent = r.category || '—';
+
+  // Notes row
+  var notesRow = document.getElementById('vm-notes-row');
+  if (r.reference) { document.getElementById('vm-notes').textContent = r.reference; notesRow.style.display='block'; }
+  else { notesRow.style.display='none'; }
+
+  // Pills
+  var pills = document.getElementById('vm-pills');
+  pills.innerHTML = '';
+  if (isUnassigned(r)) pills.innerHTML += '<span class="tag tag-red"><i class="ti ti-alert-circle" style="font-size:10px;margin-right:2px"></i>Unassigned</span>';
+  if (r.job_id) { var job = jobs.find(function(j){ return j.id===r.job_id; }); if(job) pills.innerHTML += '<span class="tag tag-job"><i class="ti ti-briefcase" style="font-size:10px;margin-right:3px"></i>'+esc(job.name)+'</span>'; }
+  if (r.po_number) pills.innerHTML += '<span class="tag tag-po"><i class="ti ti-tag" style="font-size:10px;margin-right:3px"></i>'+esc(r.po_number)+'</span>';
+
+  // File preview
+  var fa = document.getElementById('vm-file-area');
+  if (r.file_url) {
+    var isPdf = r.file_url.toLowerCase().includes('.pdf');
+    if (isPdf) {
+      fa.innerHTML = '<div class="pdf-preview" onclick="window.open(\''+r.file_url+'\',\'_blank\')"><div class="pdf-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-size:13px;font-weight:500;color:var(--red)">Receipt PDF</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Click to open in new tab</div></div><i class="ti ti-external-link" style="color:var(--text3);font-size:16px;flex-shrink:0"></i></div>';
+    } else {
+      fa.innerHTML = '<div class="img-preview"><img src="'+r.file_url+'" alt="Receipt" /></div>';
+    }
+  } else {
+    fa.innerHTML = '<div style="text-align:center;padding:14px;background:var(--bg3);border-radius:var(--radius-sm);margin-bottom:12px"><i class="ti ti-photo-off" style="font-size:22px;color:var(--text3);display:block;margin-bottom:6px"></i><div style="font-size:12px;color:var(--text3)">No file attached</div></div>';
+  }
+  document.getElementById('vm-view-mode').style.display = 'block';
+  document.getElementById('vm-edit-mode').style.display = 'none';
+  document.getElementById('view-modal').classList.add('open');
+}
+
+function closeView() { document.getElementById('view-modal').classList.remove('open'); viewingId = null; }
+
+function openEditMode() {
+  var r = receipts.find(function(x){ return x.id === viewingId; }); if (!r) return;
+  document.getElementById('e-vendor').value = r.vendor || '';
+  document.getElementById('e-amount').value = r.amount || '';
+  document.getElementById('e-gst').value = r.gst || '';
+  document.getElementById('e-hst').value = r.hst || '';
+  document.getElementById('e-date').value = r.date || '';
+  document.getElementById('e-category').value = r.category || '';
+  document.getElementById('e-job').value = r.job_number || '';
+  document.getElementById('e-po').value = r.po_number || '';
+  document.getElementById('e-card').value = r.card || '';
+  document.getElementById('e-ref').value = r.reference || '';
+  document.getElementById('vm-view-mode').style.display = 'none';
+  document.getElementById('vm-edit-mode').style.display = 'block';
+}
+
+function cancelEdit() { document.getElementById('vm-view-mode').style.display='block'; document.getElementById('vm-edit-mode').style.display='none'; }
+
+async function saveEdit() {
+  var r = receipts.find(function(x){ return x.id === viewingId; }); if (!r) return;
+  try {
+    var updates = {
+      vendor: document.getElementById('e-vendor').value.trim() || r.vendor,
+      amount: parseFloat(document.getElementById('e-amount').value) || null,
+      gst: parseFloat(document.getElementById('e-gst').value) || null,
+      hst: parseFloat(document.getElementById('e-hst').value) || null,
+      date: document.getElementById('e-date').value || r.date,
+      category: document.getElementById('e-category').value,
+      job_number: document.getElementById('e-job').value.trim() || null,
+      po_number: document.getElementById('e-po').value.trim() || null,
+      card: document.getElementById('e-card').value.trim() || null,
+      reference: document.getElementById('e-ref').value.trim() || null
+    };
+    var updated = await apiCall('PUT', '/receipts/' + viewingId, updates);
+    Object.assign(r, updated);
+    closeView();
+    updateDashboard(); renderDocs(); updateInsights(); renderExport();
+    showToast('Receipt updated');
+  } catch(err) { showToast('Failed to save: ' + err.message, 'error'); }
+}
+
+async function deleteReceipt() {
+  if (!confirm('Delete this receipt? This cannot be undone.')) return;
+  try {
+    await apiCall('DELETE', '/receipts/' + viewingId);
+    receipts = receipts.filter(function(x){ return x.id !== viewingId; });
+    closeView();
+    updateDashboard(); renderDocs(); updateInsights(); renderExport();
+    showToast('Receipt deleted');
+  } catch(err) { showToast('Failed to delete: ' + err.message, 'error'); }
+}
+
+// ── Export ──
+function renderExport() {
+  var jobNums = [...new Set(receipts.map(function(r){ return r.job_number; }).filter(Boolean))].sort();
+  var poNums = [...new Set(receipts.map(function(r){ return r.po_number; }).filter(Boolean))].sort();
+  var cards = [...new Set(receipts.map(function(r){ return r.card; }).filter(Boolean))].sort();
+  var vendors = [...new Set(receipts.map(function(r){ return r.vendor; }).filter(Boolean))].sort();
+  var ej = document.getElementById('exp-job'); if(ej) ej.innerHTML = '<option value="">All jobs</option>' + jobNums.map(function(j){ return '<option>'+esc(j)+'</option>'; }).join('');
+  var ep = document.getElementById('exp-po'); if(ep) ep.innerHTML = '<option value="">All POs</option>' + poNums.map(function(p){ return '<option>'+esc(p)+'</option>'; }).join('');
+  var ec = document.getElementById('exp-card'); if(ec) ec.innerHTML = '<option value="">All cards</option>' + cards.map(function(c){ return '<option>'+esc(c)+'</option>'; }).join('');
+  var ev = document.getElementById('exp-vendor'); if(ev) ev.innerHTML = '<option value="">All vendors</option>' + vendors.map(function(v){ return '<option>'+esc(v)+'</option>'; }).join('');
+  var list = document.getElementById('export-list');
+  if (!list) return;
+  if (!receipts.length) { list.innerHTML = '<div style="font-size:12px;color:var(--text3);text-align:center;padding:20px 0">No receipts yet</div>'; return; }
+  list.innerHTML = receipts.map(function(r) {
+    return '<div style="display:flex;align-items:center;gap:9px;padding:8px 10px;background:var(--bg3);border-radius:var(--radius-sm);margin-bottom:6px">' +
+      '<input type="checkbox" class="exp-check" data-id="'+r.id+'" style="accent-color:var(--accent);width:14px;height:14px;cursor:pointer;flex-shrink:0" onchange="updateExportCount()" />' +
+      '<div style="flex:1"><div style="font-size:12px;font-weight:500">'+esc(r.vendor||'Unknown')+'</div><div style="font-size:10px;color:var(--text3);margin-top:1px">'+(r.date||'')+(r.reference?' · '+esc(r.reference):'')+'</div></div>' +
+      '<div style="font-family:Syne,sans-serif;font-weight:600;font-size:13px">$'+(parseFloat(r.amount)||0).toFixed(2)+'</div></div>';
+  }).join('');
+  updateExportCount();
+}
+
+function updateExportCount() {
+  var checks = document.querySelectorAll('.exp-check');
+  var selected = Array.from(checks).filter(function(c){ return c.checked; }).length;
+  document.getElementById('export-count').textContent = checks.length + ' match · ' + selected + ' selected';
+}
+
+function doExport() {
+  var checked = Array.from(document.querySelectorAll('.exp-check:checked')).map(function(c){ return c.dataset.id; });
+  var toExport = checked.length ? receipts.filter(function(r){ return checked.includes(r.id); }) : receipts;
+  if (!toExport.length) { alert('No receipts selected.'); return; }
+  var rows = [['Date','Vendor','Amount','GST','HST','Total Tax','Category','Job #','PO #','Card','Notes']];
+  toExport.forEach(function(r){ rows.push([r.date,r.vendor,r.amount,r.gst,r.hst,taxAmt(r),r.category,r.job_number,r.po_number,r.card,r.reference]); });
+  var csv = rows.map(function(r){ return r.map(function(v){ return '"'+(v==null?'':v)+'"'; }).join(','); }).join('\n');
+  var blob = new Blob([csv],{type:'text/csv'});
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'slip_export.csv'; a.click();
+}
+
+function selectFormat(el) { document.querySelectorAll('.format-btn').forEach(function(b){ b.classList.remove('active'); }); el.classList.add('active'); }
+
+// ── Email Integration ──
+function connectGmail() {
+  window.open(API + '/email/connect/gmail?_auth=' + authToken, 'gmail_oauth', 'width=500,height=600,scrollbars=yes');
+  window.addEventListener('message', function handler(e) {
+    if (e.data && e.data.type === 'email_connected') {
+      window.removeEventListener('message', handler);
+      loadEmailAccounts();
+    }
+  });
+}
+
+function connectOutlook() {
+  window.open(API + '/email/connect/outlook?_auth=' + authToken, 'outlook_oauth', 'width=500,height=600,scrollbars=yes');
+  window.addEventListener('message', function handler(e) {
+    if (e.data && e.data.type === 'email_connected') {
+      window.removeEventListener('message', handler);
+      showToast('Outlook connected!');
+      loadEmailAccounts();
+    }
+  });
+}
+
+async function loadEmailAccounts() {
+  try {
+    var accounts = await apiCall('GET', '/email/status');
+    var el = document.getElementById('email-accounts');
+    if (!el) return;
+    if (!accounts.length) {
+      el.innerHTML = '<div style="text-align:center;padding:24px 16px;background:var(--bg3);border-radius:var(--radius-sm);border:1px dashed var(--border2)"><i class="ti ti-mail-off" style="font-size:24px;color:var(--text3);display:block;margin-bottom:8px"></i><div style="font-size:12px;color:var(--text2);margin-bottom:4px">No email connected yet</div><div style="font-size:11px;color:var(--text3)">Link your Gmail to automatically pull in receipts</div></div>';
+      return;
+    }
+    el.innerHTML = accounts.map(function(a) {
+      var icon = a.provider === 'outlook'
+        ? '<i class="ti ti-brand-windows" style="font-size:18px;color:#0078D4;flex-shrink:0"></i>'
+        : '<i class="ti ti-brand-gmail" style="font-size:18px;color:#EA4335;flex-shrink:0"></i>';
+      var label = a.provider === 'outlook' ? 'Outlook' : 'Gmail';
+      return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border-radius:var(--radius-sm);margin-bottom:8px">' +
+        icon +
+        '<div style="flex:1"><div style="font-size:12px;font-weight:500">'+esc(a.email_address)+'</div><div style="font-size:10px;color:var(--text3);margin-top:2px">'+label+' · connected</div></div>' +
+        '<button class="btn btn-primary btn-sm" onclick="syncEmails(event)"><i class="ti ti-refresh"></i> Sync</button>' +
+        '<button class="btn btn-danger btn-sm" onclick="disconnectEmail(\''+a.provider+'\')"><i class="ti ti-x"></i></button></div>';
+    }).join('');
+  } catch(err) { console.error('Failed to load email accounts:', err); }
+}
+
+async function syncEmails(e) {
+  var btn = e.target.closest('button');
+  btn.disabled = true; btn.innerHTML = '<i class="ti ti-refresh"></i> Syncing...';
+  var resultEl = document.getElementById('sync-result');
+  try {
+    var data = await apiCall('POST', '/email/sync');
+    resultEl.style.background='var(--accent-light)'; resultEl.style.color='var(--accent)'; resultEl.style.borderColor='var(--accent-mid)';
+    resultEl.textContent = data.imported > 0
+      ? '✓ Imported ' + data.imported + ' new receipt' + (data.imported!==1?'s':'') + ' from your inbox'
+      : '✓ Sync complete — no new receipts found';
+    resultEl.style.display = 'block';
+    if (data.imported > 0) await loadAll();
+    setTimeout(function(){ resultEl.style.display='none'; }, 5000);
+  } catch(err) {
+    resultEl.style.background='var(--red-bg)'; resultEl.style.color='var(--red)'; resultEl.style.borderColor='#F7C1C1';
+    resultEl.textContent = 'Sync failed: ' + err.message;
+    resultEl.style.display = 'block';
+  }
+  btn.disabled = false; btn.innerHTML = '<i class="ti ti-refresh"></i> Sync';
+}
+
+async function disconnectEmail(provider) {
+  if (!confirm('Disconnect this email account?')) return;
+  try { await apiCall('DELETE', '/email/disconnect/' + provider); loadEmailAccounts(); showToast('Email disconnected'); }
+  catch(err) { showToast('Failed: ' + err.message, 'error'); }
+}
+
+// ── Tax Summary ──
+function renderTaxSummary() {
+  var withTax = receipts.filter(function(r){ return (parseFloat(r.gst)||0) + (parseFloat(r.hst)||0) > 0; });
+  var totalGST = receipts.reduce(function(s,r){ return s+(parseFloat(r.gst)||0); }, 0);
+  var totalHST = receipts.reduce(function(s,r){ return s+(parseFloat(r.hst)||0); }, 0);
+  var totalITC = totalGST + totalHST;
+
+  document.getElementById('tax-gst-total').textContent = fmt(totalGST);
+  document.getElementById('tax-hst-total').textContent = fmt(totalHST);
+  document.getElementById('tax-itc-total').textContent = fmt(totalITC);
+  document.getElementById('tax-count').textContent = withTax.length;
+
+  // ── Quarterly breakdown ──
+  var quarters = {};
+  receipts.forEach(function(r) {
+    if (!r.date) return;
+    var d = new Date(r.date + 'T00:00:00');
+    var q = 'Q' + (Math.floor(d.getMonth() / 3) + 1) + ' ' + d.getFullYear();
+    if (!quarters[q]) quarters[q] = { gst: 0, hst: 0, count: 0 };
+    quarters[q].gst += parseFloat(r.gst) || 0;
+    quarters[q].hst += parseFloat(r.hst) || 0;
+    quarters[q].count++;
+  });
+  var qKeys = Object.keys(quarters).sort(function(a, b) {
+    // Sort by year then quarter
+    var ay = parseInt(a.split(' ')[1]), aq = parseInt(a[1]);
+    var by2 = parseInt(b.split(' ')[1]), bq = parseInt(b[1]);
+    return ay !== by2 ? ay - by2 : aq - bq;
+  }).reverse();
+  var tbody = document.getElementById('tax-quarter-body');
+  if (!qKeys.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text3)">No receipts with tax data yet</td></tr>';
+  } else {
+    tbody.innerHTML = qKeys.map(function(q, i) {
+      var d = quarters[q];
+      var itc = d.gst + d.hst;
+      var bg = i % 2 === 0 ? '' : 'background:var(--bg3)';
+      return '<tr style="border-bottom:1px solid var(--border);' + bg + '">' +
+        '<td style="padding:10px 14px;font-weight:500">' + q + '</td>' +
+        '<td style="padding:10px 14px;text-align:right;color:var(--accent)">' + fmt(d.gst) + '</td>' +
+        '<td style="padding:10px 14px;text-align:right;color:var(--green)">' + fmt(d.hst) + '</td>' +
+        '<td style="padding:10px 14px;text-align:right;font-family:Syne,sans-serif;font-weight:700">' + fmt(itc) + '</td>' +
+        '<td style="padding:10px 14px;text-align:right;color:var(--text3)">' + d.count + '</td></tr>';
+    }).join('');
+  }
+
+  // ── By Job ──
+  var jobEl = document.getElementById('tax-by-job');
+  var jobsWithTax = jobs.filter(function(j){ return receipts.some(function(r){ return r.job_id === j.id && taxAmt(r) > 0; }); });
+  if (!jobsWithTax.length) {
+    jobEl.innerHTML = '<div style="font-size:12px;color:var(--text3);text-align:center;padding:12px 0">No job tax data yet</div>';
+  } else {
+    jobEl.innerHTML = jobsWithTax.map(function(j) {
+      var jR = receipts.filter(function(r){ return r.job_id === j.id; });
+      var gst = jR.reduce(function(s,r){ return s+(parseFloat(r.gst)||0); }, 0);
+      var hst = jR.reduce(function(s,r){ return s+(parseFloat(r.hst)||0); }, 0);
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">' +
+        '<div><div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px">' + esc(j.name) + '</div>' +
+        '<div style="font-size:10px;color:var(--text3)">GST ' + fmt(gst) + ' · HST ' + fmt(hst) + '</div></div>' +
+        '<div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;color:var(--accent);flex-shrink:0">' + fmt(gst+hst) + '</div></div>';
+    }).join('');
+  }
+
+  // ── By Category ──
+  var catEl = document.getElementById('tax-by-cat');
+  var catTax = {};
+  receipts.forEach(function(r) {
+    var t = taxAmt(r); if (!t) return;
+    var cat = r.category || 'uncategorized';
+    if (!catTax[cat]) catTax[cat] = { gst: 0, hst: 0 };
+    catTax[cat].gst += parseFloat(r.gst) || 0;
+    catTax[cat].hst += parseFloat(r.hst) || 0;
+  });
+  var catList = Object.entries(catTax).sort(function(a,b){ return (b[1].gst+b[1].hst) - (a[1].gst+a[1].hst); });
+  var colors = ['var(--accent)','var(--blue)','var(--purple)','var(--amber)','var(--green)'];
+  if (!catList.length) {
+    catEl.innerHTML = '<div style="font-size:12px;color:var(--text3);text-align:center;padding:12px 0">No category tax data yet</div>';
+  } else {
+    var maxTax = catList[0] ? catList[0][1].gst + catList[0][1].hst : 1;
+    catEl.innerHTML = catList.map(function(c, i) {
+      var itc = c[1].gst + c[1].hst;
+      var col = colors[Math.min(i, colors.length-1)];
+      return '<div class="cat-row">' +
+        '<div class="cat-dot" style="background:' + col + '"></div>' +
+        '<div style="font-size:12px;flex:1">' + c[0] + '</div>' +
+        '<div class="cat-bar-wrap"><div class="cat-bar" style="width:' + (itc/maxTax*100).toFixed(1) + '%;background:' + col + '"></div></div>' +
+        '<div style="font-size:12px;font-weight:600;font-family:Syne,sans-serif;min-width:54px;text-align:right">' + fmt(itc) + '</div></div>';
+    }).join('');
+  }
+}
+
+function exportTaxCSV() {
+  var rows = [['Date','Vendor','Category','Job #','PO #','Amount','GST','HST','Total ITC','Quarter']];
+  var withTax = receipts.filter(function(r){ return taxAmt(r) > 0; })
+    .sort(function(a,b){ return (a.date||'').localeCompare(b.date||''); });
+  withTax.forEach(function(r) {
+    var q = '';
+    if (r.date) {
+      var d = new Date(r.date + 'T00:00:00');
+      q = 'Q' + (Math.floor(d.getMonth()/3)+1) + ' ' + d.getFullYear();
+    }
+    rows.push([r.date, r.vendor, r.category, r.job_number, r.po_number,
+      r.amount, r.gst, r.hst, taxAmt(r), q]);
+  });
+  var csv = rows.map(function(r){ return r.map(function(v){ return '"'+(v==null?'':v)+'"'; }).join(','); }).join('\n');
+  var blob = new Blob([csv], { type: 'text/csv' });
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'slip_tax_report.csv'; a.click();
+  showToast('Tax report exported');
+}
+
+// ── Service Worker ──
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(function(){});
+}
+
+// ── Init ──
+(async function() {
+  // Check for password recovery link before anything else
+  if (checkRecoveryLink()) return;
+
+  // Sync mobile nav active state with default page (dashboard)
+  var mob = document.getElementById('mnav-dashboard');
+  if (mob) mob.classList.add('active');
+  renderDocs();
+  if (!authToken) { showAuthModal(); return; }
+  try {
+    await loadAll();
+    loadEmailAccounts();
+  } catch(e) { showAuthModal(); }
+})();
+</script>
+</body>
+</html>
