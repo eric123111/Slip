@@ -310,7 +310,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   /* Buttons: bigger touch targets */
   .btn{min-height:40px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
   .btn-sm{min-height:36px;padding:7px 12px;font-size:11px}
-  .assign-chip{padding:5px 10px;font-size:11px}
+  .assign-chip{padding:8px 10px;font-size:11px;width:100%;justify-content:center;margin-top:2px}
   /* Filter row: horizontal scroll */
   #doctab-all > div:first-child{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
   #doctab-all > div:first-child > div{flex-shrink:0}
@@ -956,7 +956,7 @@ var currentFileData = null;
 var currentFileName = null;
 var currentFileType = null;
 var authToken = localStorage.getItem('slip_token');
-var currentUser = null;
+var currentUser = (function(){ try { return JSON.parse(localStorage.getItem('slip_user')); } catch(e){ return null; } })();
 var authMode = 'login';
 // Touch drag state
 var _touchDragActive = false;
@@ -1032,6 +1032,7 @@ async function submitAuth() {
     authToken = data.session.access_token;
     currentUser = data.user;
     localStorage.setItem('slip_token', authToken);
+    localStorage.setItem('slip_user', JSON.stringify(data.user));
     hideAuthModal();
     updateAccountPage();
     await loadAll();
@@ -1136,7 +1137,7 @@ async function submitChangePassword() {
 
 async function logout() {
   try { await apiCall('POST', '/auth/logout'); } catch(e) {}
-  authToken = null; currentUser = null; localStorage.removeItem('slip_token');
+  authToken = null; currentUser = null; localStorage.removeItem('slip_token'); localStorage.removeItem('slip_user');
   receipts = []; jobs = [];
   updateDashboard(); renderDocs(); updateInsights(); renderExport();
   showAuthModal();
@@ -1191,6 +1192,7 @@ function getLast6Months() {
 function showPage(name, el) {
   document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
   document.getElementById('page-' + name).classList.add('active');
+  window.scrollTo(0, 0);
   // Sync sidebar nav (desktop)
   if (el && el.classList.contains('nav-item')) {
     document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
@@ -1520,7 +1522,8 @@ function esc(s) {
 
 function renderUnassignedCard(r) {
   var amt = parseFloat(r.amount)||0;
-  return '<div class="unassigned-card" draggable="true" data-id="' + r.id + '" onclick="openReceiptView(\'' + r.id + '\')" style="cursor:pointer">' +
+  var isTouch = ('ontouchstart' in window);
+  return '<div class="unassigned-card" ' + (isTouch ? '' : 'draggable="true"') + ' data-id="' + r.id + '" onclick="openReceiptView(\'' + r.id + '\')" style="cursor:pointer">' +
     '<div class="unassigned-vendor">' + esc(r.vendor||'Unknown') + '</div>' +
     '<div class="unassigned-meta">' + (r.date||'No date') + '</div>' +
     '<div class="unassigned-amt">$' + amt.toFixed(2) + '</div>' +
@@ -2526,7 +2529,7 @@ async function loadEmailAccounts() {
       var label = a.provider === 'outlook' ? 'Outlook' : 'Gmail';
       return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border-radius:var(--radius-sm);margin-bottom:8px">' +
         icon +
-        '<div style="flex:1"><div style="font-size:12px;font-weight:500">'+esc(a.email_address)+'</div><div style="font-size:10px;color:var(--text3);margin-top:2px">'+label+' · connected</div></div>' +
+        '<div style="flex:1"><div style="font-size:12px;font-weight:500">'+(a.email_address ? esc(a.email_address) : label)+'</div><div style="font-size:10px;color:var(--text3);margin-top:2px">'+label+' · connected</div></div>' +
         '<button class="btn btn-primary btn-sm" onclick="syncEmails(event)"><i class="ti ti-refresh"></i> Sync</button>' +
         '<button class="btn btn-danger btn-sm" onclick="disconnectEmail(\''+a.provider+'\')"><i class="ti ti-x"></i></button></div>';
     }).join('');
@@ -2686,6 +2689,7 @@ if ('serviceWorker' in navigator) {
   if (mob) mob.classList.add('active');
   renderDocs();
   if (!authToken) { showAuthModal(); return; }
+  updateAccountPage();
   try {
     await loadAll();
     loadEmailAccounts();

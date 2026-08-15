@@ -290,11 +290,11 @@ router.get('/callback/outlook', async (req, res) => {
     const expiry = new Date(Date.now() + tokens.expires_in * 1000).toISOString()
 
     // Get user's email address from Graph
-    const profileRes = await fetch(MS_GRAPH + '/me?$select=mail,userPrincipalName', {
+    const profileRes = await fetch(MS_GRAPH + '/me?$select=mail,userPrincipalName,otherMails', {
       headers: { Authorization: 'Bearer ' + tokens.access_token }
     })
-    const profile = await profileRes.json()
-    const emailAddress = profile.mail || profile.userPrincipalName
+    const profile = profileRes.ok ? await profileRes.json() : {}
+    const emailAddress = profile.mail || profile.userPrincipalName || (profile.otherMails && profile.otherMails[0]) || null
 
     await supabase.from('email_integrations').upsert({
       user_id: userId,
