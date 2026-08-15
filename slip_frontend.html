@@ -2332,6 +2332,18 @@ async function saveReceipt() {
     var po = document.getElementById('u-po').value.trim();
     var card = document.getElementById('u-card').value.trim();
     var jobId = document.getElementById('u-job-link').value;
+    // Auto-create job if a number is typed but no existing job selected
+    if (job && !jobId) {
+      var existingJob = jobs.find(function(j){ return j.job_number === job || j.name === job; });
+      if (existingJob) {
+        jobId = existingJob.id;
+      } else {
+        var newJob = await apiCall('POST', '/jobs', { name: job, job_number: job });
+        jobs.push(newJob);
+        jobId = newJob.id;
+        populateJobSelect();
+      }
+    }
     if (amount) fd.append('amount', amount);
     if (gst) fd.append('gst', gst);
     if (hst) fd.append('hst', hst);
