@@ -78,7 +78,7 @@ router.post('/refill', requireAuth, async (req, res) => {
   try {
     const { data: receipt, error: fetchErr } = await supabase
       .from('receipts')
-      .select('file_url, file_type')
+      .select('file_url')
       .eq('id', receiptId)
       .eq('user_id', req.user.id)
       .single()
@@ -90,7 +90,11 @@ router.post('/refill', requireAuth, async (req, res) => {
     if (!fileRes.ok) return res.status(500).json({ error: 'Failed to download receipt file' })
 
     const buffer = Buffer.from(await fileRes.arrayBuffer())
-    const mimeType = receipt.file_type || fileRes.headers.get('content-type') || 'image/jpeg'
+    const urlLower = receipt.file_url.toLowerCase()
+    const mimeType = urlLower.includes('.pdf') ? 'application/pdf'
+      : urlLower.includes('.png') ? 'image/png'
+      : urlLower.includes('.webp') ? 'image/webp'
+      : fileRes.headers.get('content-type') || 'image/jpeg'
 
     const parsed = await parseWithAI(buffer, mimeType)
     if (!parsed) return res.status(400).json({ error: 'Could not parse this file type' })

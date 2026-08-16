@@ -693,10 +693,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div id="upload-preview" style="display:none;margin-bottom:12px"></div>
     <div class="ai-bar">
       <div>
-        <div style="font-size:12px;color:var(--accent);font-weight:500"><i class="ti ti-sparkles" style="font-size:13px;margin-right:4px"></i>AI Autofill</div>
+        <div style="font-size:12px;color:var(--accent);font-weight:500"><i class="ti ti-sparkles" style="font-size:13px;margin-right:4px"></i>Auto Fill</div>
         <div style="font-size:11px;color:var(--text3);margin-top:1px">Backend reads your receipt and fills in the fields</div>
       </div>
-      <button class="btn btn-ai btn-sm" id="autofill-btn" onclick="runAutofill()"><i class="ti ti-wand"></i> Autofill</button>
+      <button class="btn btn-ai btn-sm" id="autofill-btn" onclick="runAutofill()"><i class="ti ti-wand"></i> Auto Fill</button>
     </div>
     <div class="ai-thinking" id="ai-thinking"><div class="dot-pulse"><span></span><span></span><span></span></div><span>AI is reading your receipt...</span></div>
     <div class="ai-error" id="ai-error"></div>
@@ -791,7 +791,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <button class="btn btn-ai btn-sm" onclick="confirmNeedsReview()"><i class="ti ti-check"></i> Looks Good</button>
       </div>
       <div id="vm-ai-fill-area" style="margin-bottom:10px">
-        <button class="btn btn-ai" style="width:100%;justify-content:center" id="vm-ai-fill-btn" onclick="runAIFillOnExisting()"><i class="ti ti-wand"></i> AI Fill</button>
+        <button class="btn btn-ai" style="width:100%;justify-content:center" id="vm-ai-fill-btn" onclick="runAIFillOnExisting()"><i class="ti ti-wand"></i> Auto Fill</button>
         <div id="vm-ai-fill-status" style="display:none;font-size:11px;color:var(--text3);text-align:center;padding:6px 0"><div class="dot-pulse" style="display:inline-flex;gap:3px;margin-right:6px"><span></span><span></span><span></span></div>AI is reading your receipt...</div>
       </div>
       <div class="edit-actions">
@@ -2339,7 +2339,7 @@ function fileSelected(input) {
       prev.innerHTML = '<div style="border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border);max-height:120px;display:flex;align-items:center;justify-content:center;background:var(--bg3)"><img src="' + currentFileData + '" style="max-width:100%;max-height:120px;object-fit:contain;display:block" /></div>';
       prev.style.display = 'block';
     } else if (file.type === 'application/pdf') {
-      prev.innerHTML = '<div class="pdf-preview"><div class="pdf-icon"><i class="ti ti-file-type-pdf"></i></div><div><div style="font-size:13px;font-weight:500;color:var(--red)">' + esc(file.name) + '</div><div style="font-size:11px;color:var(--text3);margin-top:2px">PDF ready — click Autofill to extract data</div></div></div>';
+      prev.innerHTML = '<div class="pdf-preview"><div class="pdf-icon"><i class="ti ti-file-type-pdf"></i></div><div><div style="font-size:13px;font-weight:500;color:var(--red)">' + esc(file.name) + '</div><div style="font-size:11px;color:var(--text3);margin-top:2px">PDF ready — click Auto Fill to extract data</div></div></div>';
       prev.style.display = 'block';
     }
   };
