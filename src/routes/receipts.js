@@ -103,6 +103,19 @@ router.put('/:id', requireAuth, async (req, res) => {
   res.json(data)
 })
 
+// Rename a PO across all receipts
+router.post('/rename-po', requireAuth, async (req, res) => {
+  const { oldPO, newPO } = req.body
+  if (!oldPO || !newPO) return res.status(400).json({ error: 'oldPO and newPO required' })
+  const { error } = await supabase
+    .from('receipts')
+    .update({ po_number: newPO })
+    .eq('user_id', req.user.id)
+    .eq('po_number', oldPO)
+  if (error) return res.status(500).json({ error: error.message })
+  res.json({ message: 'Renamed' })
+})
+
 // Delete a receipt
 router.delete('/:id', requireAuth, async (req, res) => {
   const { data, error } = await supabase
