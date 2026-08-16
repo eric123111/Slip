@@ -2556,7 +2556,6 @@ function openEditMode() {
   document.getElementById('e-ref').value = r.reference || '';
   var ejl = document.getElementById('e-job-list');
   if (ejl) ejl.innerHTML = jobs.map(function(j){ return '<option value="' + esc(j.name) + '">' + (j.job_number ? esc(j.job_number) : '') + '</option>'; }).join('');
-  populatePODatalist('e-po-list');
   document.getElementById('vm-view-mode').style.display = 'none';
   document.getElementById('vm-edit-mode').style.display = 'block';
 }
