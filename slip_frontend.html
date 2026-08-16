@@ -2339,9 +2339,10 @@ function fileSelected(input) {
       prev.innerHTML = '<div style="border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border);max-height:120px;display:flex;align-items:center;justify-content:center;background:var(--bg3)"><img src="' + currentFileData + '" style="max-width:100%;max-height:120px;object-fit:contain;display:block" /></div>';
       prev.style.display = 'block';
     } else if (file.type === 'application/pdf') {
-      prev.innerHTML = '<div class="pdf-preview"><div class="pdf-icon"><i class="ti ti-file-type-pdf"></i></div><div><div style="font-size:13px;font-weight:500;color:var(--red)">' + esc(file.name) + '</div><div style="font-size:11px;color:var(--text3);margin-top:2px">PDF ready — click Auto Fill to extract data</div></div></div>';
+      prev.innerHTML = '<div class="pdf-preview"><div class="pdf-icon"><i class="ti ti-file-type-pdf"></i></div><div><div style="font-size:13px;font-weight:500;color:var(--red)">' + esc(file.name) + '</div><div style="font-size:11px;color:var(--text3);margin-top:2px">PDF ready — reading with AI...</div></div></div>';
       prev.style.display = 'block';
     }
+    runAutofill();
   };
   reader.readAsDataURL(file);
 }
