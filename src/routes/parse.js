@@ -35,7 +35,7 @@ async function parseWithAI(buffer, mimeType) {
     ? { type: 'image', source: { type: 'base64', media_type: mimeType, data: base64 } }
     : { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64 } }
   const message = await anthropic.messages.create({
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-haiku-4-5-20251001',
     max_tokens: 1024,
     messages: [{ role: 'user', content: [contentItem, { type: 'text', text: RECEIPT_PROMPT }] }]
   })
