@@ -84,11 +84,14 @@ router.get('/', requireAuth, async (req, res) => {
 
 // Update a receipt
 router.put('/:id', requireAuth, async (req, res) => {
-  const { vendor, amount, gst, hst, date, category, reference, job_number, po_number, card, job_id } = req.body
+  const { vendor, amount, gst, hst, date, category, reference, job_number, po_number, card, job_id, needs_review } = req.body
+
+  const updates = { vendor, amount, gst, hst, date, category, reference, job_number, po_number, card, job_id: job_id !== undefined ? (job_id || null) : undefined }
+  if (needs_review !== undefined) updates.needs_review = needs_review
 
   const { data, error } = await supabase
     .from('receipts')
-    .update({ vendor, amount, gst, hst, date, category, reference, job_number, po_number, card, job_id: job_id !== undefined ? (job_id || null) : undefined })
+    .update(updates)
     .eq('id', req.params.id)
     .eq('user_id', req.user.id)
     .select()

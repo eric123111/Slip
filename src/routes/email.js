@@ -448,7 +448,8 @@ async function syncGmail(userId, integration) {
       gst: ai?.gst || null,
       hst: ai?.hst || null,
       email_message_id: 'gmail:' + msg.id,
-      source: 'email_gmail'
+      source: 'email_gmail',
+      needs_review: true
     })
     imported++
   }
@@ -559,7 +560,8 @@ async function syncOutlook(userId, integration) {
       gst: ai?.gst || null,
       hst: ai?.hst || null,
       email_message_id: 'outlook:' + msg.id,
-      source: 'email_outlook'
+      source: 'email_outlook',
+      needs_review: true
     })
 
     imported++

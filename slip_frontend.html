@@ -399,6 +399,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     </div>
   </div>
   <div class="content">
+    <div id="review-banner" style="display:none;background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:12px;align-items:center;justify-content:space-between;gap:8px">
+      <span style="font-size:12px;color:var(--accent)"><i class="ti ti-sparkles" style="margin-right:5px"></i><strong id="review-banner-count">0</strong> email receipt(s) need your review</span>
+      <button class="btn btn-ai btn-sm" onclick="openReviewQueue()"><i class="ti ti-eye"></i> Review</button>
+    </div>
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
       <input class="search-bar" id="doc-search" placeholder="Search vendors, job, PO, card..." oninput="renderDocs()" />
     </div>
@@ -782,6 +786,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div id="vm-notes-row" style="margin-bottom:12px;display:none">
         <div class="detail-field"><div class="detail-field-label">Notes</div><div class="detail-field-val" id="vm-notes">—</div></div>
       </div>
+      <div id="vm-review-bar" style="display:none;background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+        <span style="font-size:12px;color:var(--accent)"><i class="ti ti-sparkles" style="margin-right:4px"></i>Email import — confirm or edit the details below</span>
+        <button class="btn btn-ai btn-sm" onclick="confirmNeedsReview()"><i class="ti ti-check"></i> Looks Good</button>
+      </div>
+      <div id="vm-ai-fill-area" style="margin-bottom:10px">
+        <button class="btn btn-ai" style="width:100%;justify-content:center" id="vm-ai-fill-btn" onclick="runAIFillOnExisting()"><i class="ti ti-wand"></i> AI Fill</button>
+        <div id="vm-ai-fill-status" style="display:none;font-size:11px;color:var(--text3);text-align:center;padding:6px 0"><div class="dot-pulse" style="display:inline-flex;gap:3px;margin-right:6px"><span></span><span></span><span></span></div>AI is reading your receipt...</div>
+      </div>
       <div class="edit-actions">
         <button class="btn btn-ghost" style="flex:1;justify-content:center" onclick="openReassignModal()"><i class="ti ti-arrows-exchange"></i> Reassign</button>
         <button class="btn btn-ghost" style="flex:1;justify-content:center" onclick="openEditMode()"><i class="ti ti-edit"></i> Edit</button>
@@ -1162,6 +1174,7 @@ async function loadAll() {
     renderDocs();
     updateInsights();
     renderExport();
+    updateReviewBanner();
   } catch(err) { console.error('Load failed:', err); }
 }
 
@@ -2450,12 +2463,82 @@ function openReceiptView(id) {
   } else {
     fa.innerHTML = '<div style="text-align:center;padding:14px;background:var(--bg3);border-radius:var(--radius-sm);margin-bottom:12px"><i class="ti ti-photo-off" style="font-size:22px;color:var(--text3);display:block;margin-bottom:6px"></i><div style="font-size:12px;color:var(--text3)">No file attached</div></div>';
   }
+  // Review bar
+  var reviewBar = document.getElementById('vm-review-bar');
+  if (reviewBar) reviewBar.style.display = r.needs_review ? 'flex' : 'none';
+
+  // AI fill button — only show if there's a file attached
+  var aiFillArea = document.getElementById('vm-ai-fill-area');
+  if (aiFillArea) aiFillArea.style.display = r.file_url ? 'block' : 'none';
+  var aiFillStatus = document.getElementById('vm-ai-fill-status');
+  if (aiFillStatus) aiFillStatus.style.display = 'none';
+  var aiFillBtn = document.getElementById('vm-ai-fill-btn');
+  if (aiFillBtn) { aiFillBtn.style.display = 'flex'; aiFillBtn.disabled = false; }
+
   document.getElementById('vm-view-mode').style.display = 'block';
   document.getElementById('vm-edit-mode').style.display = 'none';
   document.getElementById('view-modal').classList.add('open');
 }
 
 function closeView() { document.getElementById('view-modal').classList.remove('open'); viewingId = null; }
+
+async function runAIFillOnExisting() {
+  if (!viewingId) return;
+  var btn = document.getElementById('vm-ai-fill-btn');
+  var status = document.getElementById('vm-ai-fill-status');
+  if (btn) { btn.style.display = 'none'; }
+  if (status) status.style.display = 'flex';
+  try {
+    var result = await apiCall('POST', '/api/refill', { receiptId: viewingId });
+    // Prefill the edit form with AI results
+    openEditMode();
+    if (result.vendor) document.getElementById('e-vendor').value = result.vendor;
+    if (result.amount != null) document.getElementById('e-amount').value = result.amount;
+    if (result.date) document.getElementById('e-date').value = result.date;
+    if (result.gst != null) document.getElementById('e-gst').value = result.gst;
+    if (result.hst != null) document.getElementById('e-hst').value = result.hst;
+    if (result.notes) document.getElementById('e-ref').value = result.notes;
+    showToast('AI filled the fields — review and save', 'success');
+  } catch(err) {
+    showToast('AI fill failed: ' + (err.message || 'Unknown error'), 'error');
+    if (btn) { btn.style.display = 'flex'; btn.disabled = false; }
+  }
+  if (status) status.style.display = 'none';
+}
+
+async function confirmNeedsReview() {
+  if (!viewingId) return;
+  try {
+    var updated = await apiCall('PUT', '/receipts/' + viewingId, { needs_review: false });
+    var idx = receipts.findIndex(function(r){ return r.id === viewingId; });
+    if (idx !== -1) receipts[idx] = Object.assign(receipts[idx], updated);
+    var bar = document.getElementById('vm-review-bar');
+    if (bar) bar.style.display = 'none';
+    updateReviewBanner();
+    showToast('Receipt confirmed', 'success');
+  } catch(err) {
+    showToast('Failed to confirm', 'error');
+  }
+}
+
+function updateReviewBanner() {
+  var pending = receipts.filter(function(r){ return r.needs_review; });
+  var banner = document.getElementById('review-banner');
+  var countEl = document.getElementById('review-banner-count');
+  if (!banner) return;
+  if (pending.length > 0) {
+    banner.style.display = 'flex';
+    if (countEl) countEl.textContent = pending.length;
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+function openReviewQueue() {
+  var pending = receipts.filter(function(r){ return r.needs_review; });
+  if (!pending.length) { showToast('No receipts need review', 'success'); return; }
+  openReceiptView(pending[0].id);
+}
 
 function openEditMode() {
   var r = receipts.find(function(x){ return x.id === viewingId; }); if (!r) return;
