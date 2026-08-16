@@ -719,7 +719,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     </div>
     <div class="col-3" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
       <div class="form-group"><label class="form-label">Job</label><input type="text" class="form-input" id="u-job" list="u-job-list" placeholder="Select or create" /><datalist id="u-job-list"></datalist></div>
-      <div class="form-group"><label class="form-label">PO #</label><input type="text" class="form-input" id="u-po" list="u-po-list" placeholder="e.g. PO-1001" /><datalist id="u-po-list"></datalist></div>
+      <div class="form-group"><label class="form-label">PO #</label><select class="form-select" id="u-po-select" onchange="onPOSelectChange('u')"><option value="">No PO</option></select><input type="text" class="form-input" id="u-po-new" placeholder="Enter new PO number" style="display:none;margin-top:4px" /></div>
       <div class="form-group"><label class="form-label">Card</label><input type="text" class="form-input" id="u-card" placeholder="e.g. Visa 4242" /></div>
     </div>
     <div class="form-group"><label class="form-label">Notes</label><input type="text" class="form-input" id="u-ref" placeholder="Any additional notes" /></div>
@@ -812,7 +812,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       </div>
       <div class="col-3" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
         <div class="form-group"><label class="form-label">Job</label><input type="text" class="form-input" id="e-job" list="e-job-list" /><datalist id="e-job-list"></datalist></div>
-        <div class="form-group"><label class="form-label">PO #</label><input type="text" class="form-input" id="e-po" list="e-po-list" /><datalist id="e-po-list"></datalist></div>
+        <div class="form-group"><label class="form-label">PO #</label><select class="form-select" id="e-po-select" onchange="onPOSelectChange('e')"><option value="">No PO</option></select><input type="text" class="form-input" id="e-po-new" placeholder="Enter new PO number" style="display:none;margin-top:4px" /></div>
         <div class="form-group"><label class="form-label">Card</label><input type="text" class="form-input" id="e-card" /></div>
       </div>
       <div class="form-group"><label class="form-label">Notes</label><input type="text" class="form-input" id="e-ref" /></div>
@@ -853,7 +853,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div style="text-align:center;font-size:11px;color:var(--text3);margin:4px 0 8px">You can set both — job and PO are independent</div>
     <div class="form-group">
       <label class="form-label">PO Number <span style="color:var(--text3)">(optional)</span></label>
-      <input type="text" class="form-input" id="assign-po-input" list="assign-po-list" placeholder="e.g. PO-1001" /><datalist id="assign-po-list"></datalist>
+      <select class="form-select" id="assign-po-select" onchange="onPOSelectChange('assign')"><option value="">No PO</option></select>
+      <input type="text" class="form-input" id="assign-po-new" placeholder="Enter new PO number" style="display:none;margin-top:6px" />
     </div>
     <div id="assign-error" style="display:none;font-size:11px;color:var(--red);background:var(--red-bg);padding:6px 10px;border-radius:var(--radius-sm);margin-bottom:8px">Please select a job or enter a PO number.</div>
     <div class="modal-actions">
@@ -1798,9 +1799,9 @@ function openAssignModal(receiptId) {
     return '<option value="' + j.id + '">' + esc(j.name) + (j.job_number ? ' (' + esc(j.job_number) + ')' : '') + '</option>';
   }).join('');
   if (r && r.job_id) sel.value = r.job_id;
-  var poEl = document.getElementById('assign-po-input');
-  if (poEl) poEl.value = (r && r.po_number) || '';
-  populatePODatalist('assign-po-list');
+  populatePOSelect('assign-po-select', r && r.po_number);
+  var assignPoNew = document.getElementById('assign-po-new');
+  if (assignPoNew) { assignPoNew.value = ''; assignPoNew.style.display = 'none'; }
   document.getElementById('assign-error').style.display = 'none';
   document.getElementById('assign-modal').classList.add('open');
 }
@@ -1816,7 +1817,7 @@ function closeAssignModal() {
 
 async function saveAssignment() {
   var jobId = document.getElementById('assign-job-select').value;
-  var poNumber = document.getElementById('assign-po-input').value.trim();
+  var poNumber = getPOValue('assign');
   if (!jobId && !poNumber) { document.getElementById('assign-error').style.display = 'block'; return; }
   document.getElementById('assign-error').style.display = 'none';
   var btn = document.querySelector('#assign-modal .btn-primary');
@@ -2227,7 +2228,7 @@ function renderInsByPO() {
 // ── Upload Modal ──
 function openUpload() {
   populateJobSelect();
-  populatePODatalist('u-po-list');
+  populatePOSelect('u-po-select');
   document.getElementById('upload-modal').classList.add('open');
 }
 function closeUpload() { document.getElementById('upload-modal').classList.remove('open'); resetForm(); }
@@ -2245,14 +2246,38 @@ function getKnownPOOptions() {
   return [...new Set([...fromReceipts, ...fromStorage])].sort();
 }
 
-function populatePODatalist(id) {
-  var dl = document.getElementById(id);
-  if (!dl) return;
-  dl.innerHTML = getKnownPOOptions().map(function(p){ return '<option value="' + esc(p) + '">'; }).join('');
+function populatePOSelect(selectId, currentPO) {
+  var sel = document.getElementById(selectId);
+  if (!sel) return;
+  var pos = getKnownPOOptions();
+  sel.innerHTML = '<option value="">No PO</option>' +
+    pos.map(function(p){ return '<option value="' + esc(p) + '">' + esc(p) + '</option>'; }).join('') +
+    '<option value="__new__">+ New PO…</option>';
+  if (currentPO && currentPO !== '__new__') sel.value = currentPO;
+}
+
+function onPOSelectChange(prefix) {
+  var sel = document.getElementById(prefix + '-po-select');
+  var inp = document.getElementById(prefix + '-po-new');
+  if (!sel || !inp) return;
+  inp.style.display = sel.value === '__new__' ? 'block' : 'none';
+  if (sel.value === '__new__') inp.focus();
+}
+
+function getPOValue(prefix) {
+  var sel = document.getElementById(prefix + '-po-select');
+  if (!sel) return '';
+  if (sel.value === '__new__') {
+    var inp = document.getElementById(prefix + '-po-new');
+    return inp ? inp.value.trim() : '';
+  }
+  return sel.value;
 }
 
 function resetForm() {
-  ['u-vendor','u-amount','u-gst','u-hst','u-job','u-po','u-card','u-ref'].forEach(function(id){ var e=document.getElementById(id); if(e) e.value=''; });
+  ['u-vendor','u-amount','u-gst','u-hst','u-job','u-card','u-ref'].forEach(function(id){ var e=document.getElementById(id); if(e) e.value=''; });
+  var uPoSel=document.getElementById('u-po-select'); if(uPoSel) uPoSel.value='';
+  var uPoNew=document.getElementById('u-po-new'); if(uPoNew){uPoNew.value='';uPoNew.style.display='none';}
   document.getElementById('u-date').value = '';
   document.getElementById('u-category').value = '';
   document.getElementById('file-name').textContent = '';
@@ -2330,7 +2355,7 @@ async function saveReceipt() {
     var category = document.getElementById('u-category').value;
     var reference = document.getElementById('u-ref').value.trim();
     var job = document.getElementById('u-job').value.trim();
-    var po = document.getElementById('u-po').value.trim();
+    var po = getPOValue('u');
     var card = document.getElementById('u-card').value.trim();
     var jobId = '';
     if (job) {
@@ -2420,7 +2445,8 @@ function openEditMode() {
   document.getElementById('e-category').value = r.category || '';
   var currentJob = r.job_id ? jobs.find(function(j){ return j.id === r.job_id; }) : null;
   document.getElementById('e-job').value = currentJob ? currentJob.name : (r.job_number || '');
-  document.getElementById('e-po').value = r.po_number || '';
+  populatePOSelect('e-po-select', r.po_number);
+  var ePoNew = document.getElementById('e-po-new'); if (ePoNew) { ePoNew.value=''; ePoNew.style.display='none'; }
   document.getElementById('e-card').value = r.card || '';
   document.getElementById('e-ref').value = r.reference || '';
   var ejl = document.getElementById('e-job-list');
@@ -2456,7 +2482,7 @@ async function saveEdit() {
       category: document.getElementById('e-category').value,
       job_id: jobId,
       job_number: jobNumber,
-      po_number: document.getElementById('e-po').value.trim() || null,
+      po_number: getPOValue('e') || null,
       card: document.getElementById('e-card').value.trim() || null,
       reference: document.getElementById('e-ref').value.trim() || null
     };
