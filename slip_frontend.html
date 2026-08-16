@@ -848,7 +848,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div id="assign-modal-sub" class="modal-sub"></div>
     <div class="form-group">
       <label class="form-label">Assign to Job <span style="color:var(--text3)">(optional)</span></label>
-      <select class="form-select" id="assign-job-select"><option value="">No job</option></select>
+      <select class="form-select" id="assign-job-select" onchange="onAssignJobSelectChange()"><option value="">No job</option></select>
+      <input type="text" class="form-input" id="assign-job-new" placeholder="Enter new job name" style="display:none;margin-top:6px" />
     </div>
     <div style="text-align:center;font-size:11px;color:var(--text3);margin:4px 0 8px">You can set both — job and PO are independent</div>
     <div class="form-group">
@@ -1797,8 +1798,9 @@ function openAssignModal(receiptId) {
   var sel = document.getElementById('assign-job-select');
   sel.innerHTML = '<option value="">No job</option>' + jobs.map(function(j){
     return '<option value="' + j.id + '">' + esc(j.name) + (j.job_number ? ' (' + esc(j.job_number) + ')' : '') + '</option>';
-  }).join('');
+  }).join('') + '<option value="__new__">+ New Job…</option>';
   if (r && r.job_id) sel.value = r.job_id;
+  var ajn = document.getElementById('assign-job-new'); if (ajn) { ajn.value = ''; ajn.style.display = 'none'; }
   populatePOSelect('assign-po-select', r && r.po_number);
   var assignPoNew = document.getElementById('assign-po-new');
   if (assignPoNew) { assignPoNew.value = ''; assignPoNew.style.display = 'none'; }
@@ -1815,16 +1817,36 @@ function closeAssignModal() {
   assignReceiptId = null;
 }
 
+function onAssignJobSelectChange() {
+  var sel = document.getElementById('assign-job-select');
+  var inp = document.getElementById('assign-job-new');
+  if (!sel || !inp) return;
+  inp.style.display = sel.value === '__new__' ? 'block' : 'none';
+  if (sel.value === '__new__') inp.focus();
+}
+
 async function saveAssignment() {
-  var jobId = document.getElementById('assign-job-select').value;
+  var jobSelVal = document.getElementById('assign-job-select').value;
   var poNumber = getPOValue('assign');
-  if (!jobId && !poNumber) { document.getElementById('assign-error').style.display = 'block'; return; }
+  if (!jobSelVal && !poNumber) { document.getElementById('assign-error').style.display = 'block'; return; }
   document.getElementById('assign-error').style.display = 'none';
   var btn = document.querySelector('#assign-modal .btn-primary');
   btn.disabled = true;
   try {
     var updates = {};
-    if (jobId) {
+    var jobId = jobSelVal;
+    if (jobSelVal === '__new__') {
+      var newJobName = document.getElementById('assign-job-new').value.trim();
+      if (!newJobName) { showToast('Enter a job name', 'error'); btn.disabled = false; return; }
+      var existing = jobs.find(function(j){ return j.name === newJobName || j.job_number === newJobName; });
+      if (existing) {
+        jobId = existing.id;
+      } else {
+        var created = await apiCall('POST', '/jobs', { name: newJobName, job_number: newJobName });
+        jobs.push(created); jobId = created.id;
+      }
+    }
+    if (jobId && jobId !== '__new__') {
       var job = jobs.find(function(j){ return j.id === jobId; });
       updates.job_id = jobId;
       updates.job_number = job ? (job.job_number || null) : null;
