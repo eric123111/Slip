@@ -1807,7 +1807,7 @@ function openAssignModal(receiptId) {
 }
 
 function openReassignModal() {
-  if (viewingId) { closeView(); openAssignModal(viewingId); }
+  if (viewingId) { var id = viewingId; closeView(); openAssignModal(id); }
 }
 
 function closeAssignModal() {
