@@ -6,7 +6,27 @@ import { requireAuth } from '../middleware/auth.js'
 const router = Router()
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
+function extractJSON(text) {
+  const trimmed = text.trim()
+  // Strip markdown code fences if present
+  const fenced = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/)
+  const jsonStr = fenced ? fenced[1].trim() : trimmed
+  return JSON.parse(jsonStr)
+}
+
+const RECEIPT_PROMPT = `Extract receipt data and return ONLY a JSON object:
+{
+  "vendor": "store or company name",
+  "amount": total as number or null,
+  "date": "YYYY-MM-DD" or null,
+  "gst": GST amount as number or null,
+  "hst": HST amount as number or null,
+  "notes": any PO or reference info or null
+}
+If a field cannot be determined, use null. Return only the JSON, no explanation.`
+
 async function parseWithAI(buffer, mimeType) {
+  if (!process.env.ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY not configured')
   const base64 = buffer.toString('base64')
   const isImage = mimeType.startsWith('image/')
   const isPDF = mimeType === 'application/pdf'
@@ -17,57 +37,26 @@ async function parseWithAI(buffer, mimeType) {
   const message = await anthropic.messages.create({
     model: 'claude-sonnet-4-20250514',
     max_tokens: 1024,
-    messages: [{ role: 'user', content: [contentItem, { type: 'text', text: `Extract receipt data and return ONLY a JSON object:\n{\n  "vendor": "store or company name",\n  "amount": total as number or null,\n  "date": "YYYY-MM-DD" or null,\n  "gst": GST amount as number or null,\n  "hst": HST amount as number or null,\n  "notes": any PO or reference info or null\n}\nReturn only the JSON, no explanation.` }] }]
+    messages: [{ role: 'user', content: [contentItem, { type: 'text', text: RECEIPT_PROMPT }] }]
   })
-  return JSON.parse(message.content[0].text.trim())
+  return extractJSON(message.content[0].text)
 }
 
 router.post('/parse-receipt', requireAuth, async (req, res) => {
   const { fileData, fileType } = req.body
-  if (!fileData || !fileType) {
-    return res.status(400).json({ error: 'fileData and fileType required' })
-  }
-
+  if (!fileData || !fileType) return res.status(400).json({ error: 'fileData and fileType required' })
   const isImage = fileType.startsWith('image/')
   const isPDF = fileType === 'application/pdf'
-  if (!isImage && !isPDF) {
-    return res.status(400).json({ error: 'File must be an image or PDF' })
-  }
+  if (!isImage && !isPDF) return res.status(400).json({ error: 'File must be an image or PDF' })
 
   try {
-    const contentItem = isImage
-      ? { type: 'image', source: { type: 'base64', media_type: fileType, data: fileData } }
-      : { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: fileData } }
-
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1024,
-      messages: [{
-        role: 'user',
-        content: [
-          contentItem,
-          {
-            type: 'text',
-            text: `Extract receipt data and return ONLY a JSON object with these fields:
-{
-  "vendor": "store or company name",
-  "amount": total amount as a number (no currency symbol),
-  "date": "YYYY-MM-DD",
-  "gst": GST amount as a number or null,
-  "hst": HST amount as a number or null,
-  "notes": any PO or reference info or null
-}
-If a field cannot be determined, use null. Return only the JSON, no explanation.`
-          }
-        ]
-      }]
-    })
-
-    const parsed = JSON.parse(message.content[0].text.trim())
+    const buffer = Buffer.from(fileData, 'base64')
+    const parsed = await parseWithAI(buffer, fileType)
+    if (!parsed) return res.status(400).json({ error: 'Could not parse this file type' })
     res.json(parsed)
   } catch (err) {
     console.error('Parse error:', err.message)
-    res.status(500).json({ error: 'Failed to parse receipt' })
+    res.status(500).json({ error: err.message || 'Failed to parse receipt' })
   }
 })
 
@@ -102,7 +91,7 @@ router.post('/refill', requireAuth, async (req, res) => {
     res.json(parsed)
   } catch (err) {
     console.error('Refill error:', err.message)
-    res.status(500).json({ error: 'Failed to parse receipt' })
+    res.status(500).json({ error: err.message || 'Failed to parse receipt' })
   }
 })
 
