@@ -2698,22 +2698,51 @@ function resetForm() {
 function fileSelected(input) {
   if (!input.files || !input.files[0]) return;
   var file = input.files[0];
-  currentFileName = file.name; currentFileType = file.type;
+  currentFileName = file.name;
+  // Normalize HEIC/HEIF (common on iPhone) to jpeg for API compatibility
+  currentFileType = (file.type === 'image/heic' || file.type === 'image/heif') ? 'image/jpeg' : file.type;
   document.getElementById('file-name').textContent = file.name;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    currentFileData = e.target.result;
-    var prev = document.getElementById('upload-preview');
-    if (file.type.startsWith('image/')) {
-      prev.innerHTML = '<div style="border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border);max-height:120px;display:flex;align-items:center;justify-content:center;background:var(--bg3)"><img src="' + currentFileData + '" style="max-width:100%;max-height:120px;object-fit:contain;display:block" /></div>';
-      prev.style.display = 'block';
-    } else if (file.type === 'application/pdf') {
+  var prev = document.getElementById('upload-preview');
+
+  if (file.type === 'application/pdf') {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      currentFileData = e.target.result;
       prev.innerHTML = '<div class="pdf-preview"><div class="pdf-icon"><i class="ti ti-file-type-pdf"></i></div><div><div style="font-size:13px;font-weight:500;color:var(--red)">' + esc(file.name) + '</div><div style="font-size:11px;color:var(--text3);margin-top:2px">PDF ready — reading with AI...</div></div></div>';
       prev.style.display = 'block';
-    }
-    runAutofill();
-  };
-  reader.readAsDataURL(file);
+      runAutofill();
+    };
+    reader.readAsDataURL(file);
+  } else if (file.type.startsWith('image/')) {
+    // Compress image via canvas before storing — keeps base64 under ~2MB
+    var img = new Image();
+    var objectUrl = URL.createObjectURL(file);
+    img.onload = function() {
+      URL.revokeObjectURL(objectUrl);
+      var MAX = 1600;
+      var w = img.width, h = img.height;
+      if (w > MAX || h > MAX) {
+        if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+        else { w = Math.round(w * MAX / h); h = MAX; }
+      }
+      var canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      currentFileData = canvas.toDataURL('image/jpeg', 0.82);
+      currentFileType = 'image/jpeg';
+      prev.innerHTML = '<div style="border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border);max-height:120px;display:flex;align-items:center;justify-content:center;background:var(--bg3)"><img src="' + currentFileData + '" style="max-width:100%;max-height:120px;object-fit:contain;display:block" /></div>';
+      prev.style.display = 'block';
+      runAutofill();
+    };
+    img.onerror = function() {
+      // Fallback: read as-is if canvas fails
+      URL.revokeObjectURL(objectUrl);
+      var reader = new FileReader();
+      reader.onload = function(e) { currentFileData = e.target.result; runAutofill(); };
+      reader.readAsDataURL(file);
+    };
+    img.src = objectUrl;
+  }
 }
 
 async function runAutofill() {
