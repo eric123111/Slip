@@ -336,9 +336,285 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   /* Unassigned card */
   .unassigned-card{padding:12px 14px}
 }
+
+/* ══ LANDING PAGE ══ */
+#landing-page {
+  position:fixed;inset:0;z-index:600;
+  display:flex;flex-direction:column;overflow-y:auto;
+  background:#0C0E13;
+  font-family:system-ui,-apple-system,sans-serif;
+}
+.lp-hero {
+  flex:0 0 auto;
+  background:#0C0E13;
+  padding:0 48px;
+  min-height:100vh;
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+}
+.lp-nav {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:28px 0;border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.lp-logo {
+  display:flex;align-items:center;gap:10px;
+  font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.03em;
+}
+.lp-logo-icon {
+  width:34px;height:34px;background:#2563EB;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:900;color:#fff;
+}
+.lp-nav-links { display:flex;gap:6px; }
+.lp-btn-ghost {
+  background:transparent;border:1px solid rgba(255,255,255,0.18);
+  color:rgba(255,255,255,0.75);padding:8px 18px;border-radius:6px;
+  font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;
+  font-family:inherit;
+}
+.lp-btn-ghost:hover { background:rgba(255,255,255,0.08);color:#fff; }
+.lp-btn-primary {
+  background:#2563EB;border:none;color:#fff;
+  padding:8px 18px;border-radius:6px;
+  font-size:13px;font-weight:600;cursor:pointer;transition:background 0.15s;
+  font-family:inherit;
+}
+.lp-btn-primary:hover { background:#1D4ED8; }
+.lp-body {
+  display:grid;grid-template-columns:1fr 420px;gap:48px;
+  align-items:center;padding:60px 0;
+}
+.lp-headline {
+  font-size:clamp(44px,6vw,80px);font-weight:800;
+  color:#fff;letter-spacing:-0.04em;line-height:1.02;
+  text-wrap:balance;
+}
+.lp-headline em { color:#2563EB;font-style:normal; }
+.lp-sub {
+  font-size:17px;color:rgba(255,255,255,0.55);
+  line-height:1.6;margin-top:20px;max-width:440px;
+}
+.lp-ctas { display:flex;gap:10px;margin-top:32px;flex-wrap:wrap; }
+.lp-cta-primary {
+  background:#2563EB;border:none;color:#fff;
+  padding:13px 28px;border-radius:8px;
+  font-size:15px;font-weight:600;cursor:pointer;transition:background 0.15s;
+  font-family:inherit;
+}
+.lp-cta-primary:hover { background:#1D4ED8; }
+.lp-cta-secondary {
+  background:transparent;border:1px solid rgba(255,255,255,0.22);
+  color:rgba(255,255,255,0.8);
+  padding:13px 28px;border-radius:8px;
+  font-size:15px;font-weight:500;cursor:pointer;transition:all 0.15s;
+  font-family:inherit;
+}
+.lp-cta-secondary:hover { background:rgba(255,255,255,0.07);color:#fff; }
+/* Receipt mockup */
+.lp-receipt-wrap {
+  display:flex;justify-content:center;align-items:center;
+  position:relative;
+}
+.lp-receipt {
+  background:#fff;border-radius:14px;width:100%;max-width:340px;
+  box-shadow:0 32px 80px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.06);
+  overflow:hidden;
+}
+.lp-receipt-header {
+  background:#F5F4F0;padding:16px 20px;
+  border-bottom:1px solid #E8E6E1;
+}
+.lp-receipt-vendor { font-size:15px;font-weight:700;color:#1A1916; }
+.lp-receipt-date { font-size:11px;color:#888;margin-top:2px; }
+.lp-receipt-body { padding:16px 20px; }
+.lp-receipt-row {
+  display:flex;justify-content:space-between;align-items:center;
+  padding:7px 0;border-bottom:1px solid #F0EFEB;
+  font-size:13px;
+}
+.lp-receipt-row:last-child { border-bottom:none; }
+.lp-receipt-label { color:#888;font-size:12px; }
+.lp-receipt-val { font-weight:600;color:#1A1916; }
+.lp-receipt-val.blue { color:#2563EB; }
+.lp-receipt-footer {
+  background:#EBF2FF;padding:10px 20px;
+  display:flex;align-items:center;gap:7px;
+}
+.lp-receipt-footer-dot {
+  width:7px;height:7px;border-radius:50%;background:#2563EB;flex-shrink:0;
+}
+.lp-receipt-footer span { font-size:12px;font-weight:600;color:#2563EB; }
+/* Floating tag */
+.lp-float-tag {
+  position:absolute;top:-18px;right:-10px;
+  background:#16A34A;color:#fff;
+  font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;
+  box-shadow:0 4px 16px rgba(22,163,74,0.4);letter-spacing:0.02em;
+}
+/* Hero bottom strip */
+.lp-hero-bottom {
+  padding:20px 0 28px;
+  border-top:1px solid rgba(255,255,255,0.07);
+  display:flex;align-items:center;gap:24px;
+  font-size:12px;color:rgba(255,255,255,0.35);
+}
+.lp-hero-bottom span { color:rgba(255,255,255,0.55); }
+/* Features section */
+.lp-features {
+  background:#F0EFEB;padding:80px 48px;
+}
+.lp-features-eyebrow {
+  font-size:11px;font-weight:700;letter-spacing:0.14em;
+  text-transform:uppercase;color:#2563EB;margin-bottom:14px;
+}
+.lp-features-headline {
+  font-size:clamp(28px,4vw,44px);font-weight:800;
+  color:#0C0E13;letter-spacing:-0.03em;line-height:1.1;
+  text-wrap:balance;margin-bottom:48px;
+}
+.lp-features-grid {
+  display:grid;grid-template-columns:repeat(3,1fr);gap:2px;
+}
+.lp-feature {
+  background:#fff;padding:32px 28px;
+}
+.lp-feature:first-child { border-radius:12px 0 0 12px; }
+.lp-feature:last-child { border-radius:0 12px 12px 0; }
+.lp-feature-icon {
+  width:42px;height:42px;background:#EBF2FF;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;color:#2563EB;margin-bottom:18px;
+}
+.lp-feature-title { font-size:16px;font-weight:700;color:#0C0E13;margin-bottom:8px; }
+.lp-feature-desc { font-size:13px;color:#5C5A56;line-height:1.6; }
+/* CTA section */
+.lp-cta-section {
+  background:#0C0E13;padding:80px 48px;
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+}
+.lp-cta-headline {
+  font-size:clamp(32px,4vw,52px);font-weight:800;
+  color:#fff;letter-spacing:-0.03em;text-wrap:balance;
+  margin-bottom:14px;
+}
+.lp-cta-sub { font-size:15px;color:rgba(255,255,255,0.5);margin-bottom:32px; }
+.lp-cta-row { display:flex;gap:10px;flex-wrap:wrap;justify-content:center; }
+.lp-footer {
+  background:#0C0E13;padding:24px 48px;
+  border-top:1px solid rgba(255,255,255,0.07);
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:12px;color:rgba(255,255,255,0.3);
+}
+@media(max-width:768px){
+  .lp-hero{padding:0 20px;min-height:auto;}
+  .lp-body{grid-template-columns:1fr;padding:40px 0;}
+  .lp-receipt-wrap{display:none;}
+  .lp-features{padding:48px 20px;}
+  .lp-features-grid{grid-template-columns:1fr;}
+  .lp-feature:first-child{border-radius:12px 12px 0 0;}
+  .lp-feature:last-child{border-radius:0 0 12px 12px;}
+  .lp-feature:not(:first-child):not(:last-child){border-radius:0;}
+  .lp-cta-section{padding:48px 20px;}
+  .lp-footer{flex-direction:column;gap:8px;text-align:center;padding:20px;}
+}
 </style>
 </head>
 <body>
+
+<!-- ══ LANDING PAGE ══ -->
+<div id="landing-page" style="display:none">
+  <div class="lp-hero">
+    <div class="lp-nav">
+      <div class="lp-logo"><div class="lp-logo-icon">S</div>Slip</div>
+      <div class="lp-nav-links">
+        <button class="lp-btn-ghost" onclick="landingSignIn()">Sign In</button>
+        <button class="lp-btn-primary" onclick="landingSignUp()">Get Started Free</button>
+      </div>
+    </div>
+    <div class="lp-body">
+      <div>
+        <div class="lp-headline">Every receipt.<br><em>Organized.</em></div>
+        <div class="lp-sub">Photograph receipts, let AI fill in the details, then sort everything by job and PO number. Built for Canadian trades.</div>
+        <div class="lp-ctas">
+          <button class="lp-cta-primary" onclick="landingSignUp()">Get Started Free</button>
+          <button class="lp-cta-secondary" onclick="landingSignIn()">Sign In</button>
+        </div>
+      </div>
+      <div class="lp-receipt-wrap">
+        <div class="lp-float-tag">✓ AI filled</div>
+        <div class="lp-receipt">
+          <div class="lp-receipt-header">
+            <div class="lp-receipt-vendor">Home Depot</div>
+            <div class="lp-receipt-date">Aug 12, 2026 &nbsp;·&nbsp; Materials</div>
+          </div>
+          <div class="lp-receipt-body">
+            <div class="lp-receipt-row">
+              <span class="lp-receipt-label">Amount</span>
+              <span class="lp-receipt-val">$284.73</span>
+            </div>
+            <div class="lp-receipt-row">
+              <span class="lp-receipt-label">GST</span>
+              <span class="lp-receipt-val">$13.56</span>
+            </div>
+            <div class="lp-receipt-row">
+              <span class="lp-receipt-label">Job</span>
+              <span class="lp-receipt-val blue">104 Main St Reno</span>
+            </div>
+            <div class="lp-receipt-row">
+              <span class="lp-receipt-label">PO #</span>
+              <span class="lp-receipt-val blue">PO-2241</span>
+            </div>
+          </div>
+          <div class="lp-receipt-footer">
+            <div class="lp-receipt-footer-dot"></div>
+            <span>Matched to job · Ready to export</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lp-hero-bottom">
+      <span>Canadian GST &amp; HST tracking</span> &nbsp;·&nbsp;
+      <span>Gmail &amp; Outlook import</span> &nbsp;·&nbsp;
+      <span>Export to CSV</span>
+    </div>
+  </div>
+
+  <div class="lp-features">
+    <div class="lp-features-eyebrow">How it works</div>
+    <div class="lp-features-headline">From photo to organized<br>in seconds.</div>
+    <div class="lp-features-grid">
+      <div class="lp-feature">
+        <div class="lp-feature-icon"><i class="ti ti-wand"></i></div>
+        <div class="lp-feature-title">AI Auto-Fill</div>
+        <div class="lp-feature-desc">Take a photo or upload a PDF. AI reads the receipt and fills in vendor, amount, date, GST, and HST — no typing required.</div>
+      </div>
+      <div class="lp-feature">
+        <div class="lp-feature-icon"><i class="ti ti-briefcase"></i></div>
+        <div class="lp-feature-title">Jobs &amp; PO Numbers</div>
+        <div class="lp-feature-desc">Drag receipts onto job cards or assign a PO number. See exactly what each job has cost you at a glance.</div>
+      </div>
+      <div class="lp-feature">
+        <div class="lp-feature-icon"><i class="ti ti-mail"></i></div>
+        <div class="lp-feature-title">Email Import</div>
+        <div class="lp-feature-desc">Connect Gmail or Outlook and Slip pulls in receipt emails automatically — attachments parsed and ready for review.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lp-cta-section">
+    <div class="lp-cta-headline">Stop losing receipts.</div>
+    <div class="lp-cta-sub">Free to get started. No credit card required.</div>
+    <div class="lp-cta-row">
+      <button class="lp-cta-primary" onclick="landingSignUp()">Create Free Account</button>
+      <button class="lp-cta-secondary" onclick="landingSignIn()">Sign In</button>
+    </div>
+  </div>
+
+  <div class="lp-footer">
+    <span>© 2026 Slip</span>
+    <span>Built for Canadian trades</span>
+  </div>
+</div>
 
 <div class="sidebar">
   <div class="logo"><div class="logo-icon">S</div><div class="logo-text">Slip</div></div>
@@ -1034,6 +1310,10 @@ function showToast(msg, type) {
 }
 
 // ── Auth ──
+function showLanding() { document.getElementById('landing-page').style.display = 'flex'; }
+function hideLanding() { document.getElementById('landing-page').style.display = 'none'; }
+function landingSignIn() { hideLanding(); switchTab('login'); showAuthModal(); }
+function landingSignUp() { hideLanding(); switchTab('signup'); showAuthModal(); }
 function showAuthModal() { document.getElementById('auth-modal').classList.add('open'); }
 function hideAuthModal() { document.getElementById('auth-modal').classList.remove('open'); }
 
@@ -1072,6 +1352,7 @@ async function submitAuth() {
     currentUser = data.user;
     localStorage.setItem('slip_token', authToken);
     localStorage.setItem('slip_user', JSON.stringify(data.user));
+    hideLanding();
     hideAuthModal();
     updateAccountPage();
     await loadAll();
@@ -1179,7 +1460,7 @@ async function logout() {
   authToken = null; currentUser = null; localStorage.removeItem('slip_token'); localStorage.removeItem('slip_user');
   receipts = []; jobs = [];
   updateDashboard(); renderDocs(); updateInsights(); renderExport();
-  showAuthModal();
+  showLanding();
 }
 
 function updateAccountPage() {
@@ -2936,12 +3217,12 @@ if ('serviceWorker' in navigator) {
   var mob = document.getElementById('mnav-dashboard');
   if (mob) mob.classList.add('active');
   renderDocs();
-  if (!authToken) { showAuthModal(); return; }
+  if (!authToken) { showLanding(); return; }
   updateAccountPage();
   try {
     await loadAll();
     loadEmailAccounts();
-  } catch(e) { showAuthModal(); }
+  } catch(e) { hideLanding(); showAuthModal(); }
 })();
 </script>
 </body>
